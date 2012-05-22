@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
   // std::shared_ptr<double> feat(Hog::get_feature("couple.jpg"));
   
   init_svm();
-  get_model();
+  // get_model();
   dispose_svm();
   return 0;
 }

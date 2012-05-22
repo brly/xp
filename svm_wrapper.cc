@@ -7,6 +7,7 @@
 #include <memory>
 #include <cassert>
 #include <cstdio>
+#include <vector>
 
 namespace {
 
@@ -111,16 +112,22 @@ void dispose_svm() {
 void get_model() {
   if (svm_check_parameter(&problem, &param) != NULL)
     assert(false);
-  
-  svm_model *model = svm_train(&problem, &param);
-  printf("model->l is %d\n", model->l);
-  printf("model->nr_class is %d\n", model->nr_class);
-  for (int i = 0; i < 10; ++i) {
-    printf("SV %d is %lf (idx is %d)\n", i+1, model->SV[0][i].value, model->SV[0][i].index);
-  }
 
+
+  svm_model *model = svm_train(&problem, &param);
+ 
+  std::vector<double> w(kTotalDim, 0);
+  for (int h = 0; h < model->l; ++h) 
+    for (int i = 0; i < kTotalDim; ++i) 
+      w[i] = model->SV[h][i].value * model->sv_coef[0][h];
+  
   for (int i = 0; i < model->l; ++i)
     printf("sv_coef test %lf\n", model->sv_coef[0][i]);
+
+  printf("SV l is %d\n", model->l);
+  for (int i = 0; i < kTotalDim; ++i)
+    printf("%d %.9lf\n", i+1, w[i]);
+
   
   svm_free_and_destroy_model(&model);
 }
