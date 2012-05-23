@@ -28,6 +28,7 @@ enum {
   //リサイズ後の画像の横幅
   kResizeX = 40,
   //リサイズ後の画像の縦幅
+  
   kResizeY = 40,
   //セルの数（横）
   kCellWidth = kResizeX / kCellX,

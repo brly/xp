@@ -14,10 +14,10 @@ $(OUTPUT): $(OBJS)
 
 .h.cc:
 main.o: hog.h svm_wrapper.h
-svm_wrapper.o: svm_wrapper.h
+svm_wrapper.o: svm_wrapper.h hog.h
 hog.o: hog.h
 
 # Clean
 .PHONY: clean
 clean:
-	$(RM) $(OBJS)
+	$(RM) $(OBJS) $(OUTPUT)
