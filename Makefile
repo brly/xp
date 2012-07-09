@@ -1,7 +1,7 @@
 LIBS := `pkg-config opencv --cflags --libs`
 CXX := g++
 CXXFLAGS := -Wall -std=c++0x -ggdb 
-OBJS := main.o svm_wrapper.o svm.o visualize_hog.o hog.o
+OBJS := main.o svm_wrapper.o svm.o visualize_hog.o hog.o simple_method.o
 OUTPUT := application
 
 $(OUTPUT): $(OBJS)
@@ -17,6 +17,7 @@ main.o: svm_wrapper.h
 svm_wrapper.o: svm_wrapper.h hog.h constant.h
 visualize_hog.o: visualize_hog.h constant.h
 hog.o: hog.h
+simple_method.o: simple_method.h svm_wrapper.h
 
 # Clean
 .PHONY: clean

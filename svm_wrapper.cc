@@ -16,10 +16,6 @@
 
 namespace {
 
-// 学習に必要なパラメータインスタンス
-svm_parameter param;
-svm_problem problem;
-
 // 画像ファイルの名前リスト
 const std::string kPositiveSampleFile = "POSITIVE_sample";
 const std::string kNegativeSampleFile = "NEGATIVE_sample";
@@ -58,6 +54,7 @@ void SvmWrapper::init_svm_parameter() {
   param.weight = NULL;
 }
 
+// Legacy code 1
 ////////////////////////////////////////////////////////////////////////////////
 // svm_problem を初期化する
 // 1. ポジティブ、ネガティブの画像の特徴をすべて求める。
@@ -77,7 +74,6 @@ void SvmWrapper::init_svm_problem() {
   std::ifstream positive_set_stream(kPositiveSampleFile.c_str());
   while (std::getline(positive_set_stream, line)) {
     Hog hog(line.c_str(), 5, 3, 40, 40, 9);
-   
     problem.x[idx] = new svm_node[kTotalDim + 1];
     for (int i = 0; i < kTotalDim; ++i) {
       problem.x[idx][i].index = i + 1;
@@ -91,12 +87,10 @@ void SvmWrapper::init_svm_problem() {
   std::ifstream negative_set_stream(kNegativeSampleFile.c_str());
   while (std::getline(negative_set_stream, line)) {
     Hog hog(line.c_str(), 5, 3, 40, 40, 9);
-
     // cv::Mat check = VisualizeHog::generate_mat(feat);
     // cv::namedWindow("check", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
     // cv::imshow("check", check);
     // cv::waitKey(0);
-    
     problem.x[idx] = new svm_node[kTotalDim + 1];
     for (int i = 0; i < kTotalDim; ++i) {
       problem.x[idx][i].index = i + 1;
@@ -108,9 +102,9 @@ void SvmWrapper::init_svm_problem() {
   }
 }
 
+// Legacy Code 2
 void SvmWrapper::init_svm_problem_dynamic(const char *name) {
   int k_sample_l = 0;
-
   // Negative Sample load & calc number of sample
   int negative_n, negative_dim;
   std::ifstream negative_stream(name);
@@ -182,13 +176,17 @@ void SvmWrapper::eval_vector(const std::vector<double>& w, const double rho) {
   }
 }
 
-SvmWrapper::SvmWrapper(int argc, char**argv) {
+SvmWrapper::SvmWrapper(int argc, char**argv, bool auto_initialize) {
   init_svm_parameter();
-  if (argc == 1) {
-    init_svm_problem();
-  } else {
-    init_svm_problem_dynamic(argv[1]);
+
+  if (auto_initialize) {
+    if (argc == 1) 
+      init_svm_problem();
+    else 
+      init_svm_problem_dynamic(argv[1]);
   }
+  
+  // LIBSVMの計算出力をオフ
   svm_set_print_string_function(&print_null);
 }
 

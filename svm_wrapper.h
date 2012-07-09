@@ -12,18 +12,39 @@
 #include <vector>
 #include <cstdlib>
 
-// インターフェース
+class SimpleMethod;
 
 class SvmWrapper {
+  // friend宣言
+  friend class SimpleMethod;
+  
+  // LibSVMに必要なパラメータインスタンス
+  svm_parameter param;
+  svm_problem problem;
+
+  // paramの初期化を行う
   void init_svm_parameter();
+
+  // problemの初期化を行う(legacy code)
   void init_svm_problem();
   void init_svm_problem_dynamic(const char* name);
+
+  // データベースと比較し、ランキングをcui表示する
   void eval_vector(const std::vector<double>& w, const double rho);
+
+  // libSVMのAPIを利用して、線形SVMの情報を得る
+  // TODO: 関数名変更
   void get_model();
+  
+  // problemを破棄する
   void dispose_svm();
+
+  // 画像の特徴量をguiで表現する
   void for_presentation(const std::vector<double>& w);
  public:
-  SvmWrapper(int argc = 0, char**argv = NULL);
+  // コンストラクタ
+  // 各引数はSvmWrapperの初期化方法を表現している
+  SvmWrapper(int argc = 1, char**argv = NULL, bool auto_initialize = true);
   ~SvmWrapper();
   void run();
 };
