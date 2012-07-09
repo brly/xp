@@ -3,14 +3,29 @@
 //
 
 #include "hog.h"
+#include "constant.h"
 
+#include <memory>
 #include <vector>
+#include <string>
+#include <iostream>
+#include <fstream>
+
 
 int main() {
-  const char name[] = "ant.pgm";
-  std::vector<double> feat(100);
-  get_hog(name, feat);
-  for (unsigned int i = 0; i < kTotalDim; ++i)
-    printf("%lf\n", feat[i]);
+
+  using namespace std;
+
+  ifstream ifs("NEGATIVE_database");
+  string line;
+  while (ifs >> line) {
+    Hog h(line.c_str(), 5, 3, 40, 40, 9);
+    // for (unsigned i = 0; i < kTotalDim; ++i)
+    //   if (h[i])
+    //     printf("%f\n", h[i]);
+    printf("%s\n", line.c_str());
+  }
+
   return 0;
 }
+

@@ -9,12 +9,23 @@
 
 #include "svm.h"
 
+#include <vector>
+#include <cstdlib>
+
 // インターフェース
 
-void init_svm();
-
-void dispose_svm();
-
-void get_model();
+class SvmWrapper {
+  void init_svm_parameter();
+  void init_svm_problem();
+  void init_svm_problem_dynamic(const char* name);
+  void eval_vector(const std::vector<double>& w, const double rho);
+  void get_model();
+  void dispose_svm();
+  void for_presentation(const std::vector<double>& w);
+ public:
+  SvmWrapper(int argc = 0, char**argv = NULL);
+  ~SvmWrapper();
+  void run();
+};
 
 #endif // SVM_WRAPPER_H

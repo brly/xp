@@ -1,84 +1,85 @@
 #include "hog.h"
 
-void Hog::get_feature_impl(IplImage* src, double* feat) {
-  //はじめに、画像サイズを変換（kCellX/Yの倍数とする）
-  IplImage* img = cvCreateImage(cvSize(kResizeX,kResizeY), 8, 1);
-  cvResize(src, img);
-
-  //画像サイズ
-  const int width = kResizeX;
-  const int height = kResizeY;
-	
-  //各セルの輝度勾配ヒストグラム
-  double hist[kCellWidth][kCellHeight][kCellBin];
-  memset(hist, 0, kCellWidth*kCellHeight*kCellBin*sizeof(double));
-
-  //各ピクセルにおける輝度勾配強度mと勾配方向degを算出し、ヒストグラムへ
-  //※端っこのピクセルでは、計算しない
-  for(int y=0; y<height; y++){
-    for(int x=0; x<width; x++){
-      if(x==0 || y==0 || x==width-1 || y==height-1){
-        continue;
-      }
-      double dx = img->imageData[y*img->widthStep+(x+1)]
-                  - img->imageData[y*img->widthStep+(x-1)];
-      double dy = img->imageData[(y+1)*img->widthStep+x]
-                  - img->imageData[(y-1)*img->widthStep+x];
-      double m = sqrt(dx*dx+dy*dy);
-      
-      //0.0～360.0の範囲になるよう変換
-      double deg = (atan2(dy, dx)+CV_PI) * 180.0 / CV_PI;
-      int bin = kCellBin * deg/360.0;
-      if(bin < 0) bin=0;
-      if(bin >= kCellBin) bin = kCellBin-1;
-      hist[(int)(x/kCellX)][(int)(y/kCellY)][bin] += m;
+void Hog::make_histgram() {
+  // make histogram_ by cell
+  for (unsigned y = 0; y < kImageHeight; ++y) {
+    for (unsigned x = 0; x < kImageWidth; ++x) {
+      double x_grad, y_grad;
+      // x
+      if (x == 0)
+        x_grad = source_.at<uchar>(y, 1) - source_.at<uchar>(y, 0);
+      else if (x == kImageWidth - 1)
+        x_grad = source_.at<uchar>(y, kImageWidth - 1)
+                 - source_.at<uchar>(y, kImageWidth - 2);
+      else
+        x_grad = source_.at<uchar>(y, x + 1) - source_.at<uchar>(y - 1, x);
+      // y
+      if (y == 0)
+        y_grad = source_.at<uchar>(1, x) - source_.at<uchar>(0, x);
+      else if (y == kImageHeight - 1)
+        y_grad = source_.at<uchar>(kImageHeight - 1, x)
+                 - source_.at<uchar>(kImageHeight - 2, x);
+      else
+        y_grad = source_.at<uchar>(y + 1, x) - source_.at<uchar>(y - 1, x);
+      // params
+      double magnitude = std::sqrt(x_grad * x_grad + y_grad * y_grad);
+      double gradient = std::atan2(y_grad, x_grad) * 180 / CV_PI;
+      double test = gradient;
+      if (gradient < 0.0) gradient += 360.0;
+      if (180.0 < gradient) gradient -= 180.0;
+      gradient = gradient / kAngle;
+      const int idx =
+          (y / kCellSize) * (kImageWidth / kCellSize) * kOrientation +
+          (x / kCellSize) * kOrientation + (static_cast<int>(gradient - 1e-10));
+      // store
+      if ((idx >= kHistgram) || (static_cast<int>(gradient-1e-10) == 9)) {
+        printf("err : %d >= %d\n", idx, kHistgram);
+        printf("gradient %f %f\n", test,  gradient);
+        assert(false);
+      }      
+      histogram_[idx] = magnitude;
     }
   }
+}
 
-  //ブロックごとで正規化
-  for(int y=0; y<kBlockHeight; y++){
-    for(int x=0; x<kBlockWidth; x++){
-			
-      //このブロックの特徴ベクトル（次元kBlockDim=kBlockX*kBlockY*kCellBin）
-      double vec[kBlockDim];
-      memset(vec, 0, kBlockDim*sizeof(double));
-      for(int j=0; j<kBlockY; j++){
-        for(int i=0; i<kBlockX; i++){
-          for(int d=0; d<kCellBin; d++){
-            int index = j*(kBlockX*kCellBin) + i*kCellBin + d; 
-            vec[index] = hist[x+i][y+j][d];
+void Hog::make_feature() {
+  int fcount = 0;
+  // block loop
+  for (unsigned y = 0; y < kImageHeight / kCellSize - kBlockSize + 1; ++y) {
+    for (unsigned x = 0; x < kImageWidth / kCellSize - kBlockSize + 1; ++x) {
+      double sum_magnitude = 0.0;
+      // cell loop
+      for (unsigned j = 0; j < kBlockSize; ++j) {
+        for (unsigned i = 0; i < kBlockSize; ++i) {
+          for (unsigned k = 0; k < kOrientation; ++k) {
+            const int idx = (y + j) * (kImageWidth / kCellSize) * kOrientation +
+                            (x + i) * kOrientation + k;
+            if (idx >= kHistgram) {
+              printf("err : %d\n", idx);
+              assert(idx < kHistgram);
+            }
+            double tmp = histogram_[idx];
+            sum_magnitude += tmp * tmp;
           }
         }
       }
-
-      //ノルムを計算し、正規化
-      double norm = 0.0;
-      for(int i=0; i<kBlockDim; i++){
-        norm += vec[i]*vec[i];
-      }
-      for(int i=0; i<kBlockDim; i++){
-        vec[i] /= sqrt(norm + 1.0);
-      }
-
-      //featに代入
-      for(int i=0; i<kBlockDim; i++){
-        int index = y*kBlockWidth*kBlockDim + x*kBlockDim + i;
-        feat[index] = vec[i];
+      sum_magnitude =  1.0 / std::sqrt(sum_magnitude + 1.0);
+      // cell loop
+      for (unsigned j = 0; j < kBlockSize; ++j) {
+        for (unsigned i = 0; i < kBlockSize; ++i) {
+          for (unsigned k = 0; k < kOrientation; ++k) {
+            const int idx = (y + j) * (kImageWidth / kCellSize) * kOrientation +
+                            (x + i) * kOrientation +
+                            k;
+            if (idx >= kHistgram) {
+              printf("err : %d\n", idx);
+              assert(idx < kHistgram);
+            }
+            destination_[fcount] = histogram_[idx] * sum_magnitude;
+            ++fcount;
+          }
+        }
       }
     }
   }
-  cvReleaseImage(&img);
-  return;
-}
-
-double *Hog::get_feature(const char* name) {
-  IplImage *img = cvLoadImage(name, 0);
-  double *feature_dest = new double[kTotalDim];
-  get_feature_impl(img, feature_dest);
-  cvReleaseImage(&img);
-  return feature_dest;
-}
-
-double *Hog::get_feature(const std::string& name) {
-  return get_feature(name.c_str());
 }
