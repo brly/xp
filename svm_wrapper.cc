@@ -63,14 +63,17 @@ void SvmWrapper::init_svm_parameter() {
 // さらに、問題のインスタンス数 l が自明であるので、適当に事前に設定する
 // そのうち、SQLiteとかで管理する..
 void SvmWrapper::init_svm_problem() {
-  printf("Total Sample (Positive + Negative) is %d\n", kSampleL);
+  // printf("Total Sample (Positive + Negative) is %d\n", kSampleL);
   problem.l = kSampleL;
   problem.y = new double[kSampleL];
   problem.x = new svm_node *[kSampleL];
-  int idx = 0; 
+  int idx = 0;
+  init_svm_problem_positive_default(idx);
+  init_svm_problem_negative_default(idx);
+}
+
+void SvmWrapper::init_svm_problem_positive_default(int& idx) {
   std::string line;
-  
-  // Positive sample
   std::ifstream positive_set_stream(kPositiveSampleFile.c_str());
   while (std::getline(positive_set_stream, line)) {
     Hog hog(line.c_str(), 5, 3, 40, 40, 9);
@@ -82,15 +85,14 @@ void SvmWrapper::init_svm_problem() {
     problem.x[idx][kTotalDim].index = -1;
     problem.y[idx] = 1;
     ++idx;
-  }
-  // Negative sample
+  }  
+}
+
+void SvmWrapper::init_svm_problem_negative_default(int& idx) {
+  std::string line;
   std::ifstream negative_set_stream(kNegativeSampleFile.c_str());
   while (std::getline(negative_set_stream, line)) {
     Hog hog(line.c_str(), 5, 3, 40, 40, 9);
-    // cv::Mat check = VisualizeHog::generate_mat(feat);
-    // cv::namedWindow("check", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
-    // cv::imshow("check", check);
-    // cv::waitKey(0);
     problem.x[idx] = new svm_node[kTotalDim + 1];
     for (int i = 0; i < kTotalDim; ++i) {
       problem.x[idx][i].index = i + 1;
@@ -99,10 +101,10 @@ void SvmWrapper::init_svm_problem() {
     problem.x[idx][kTotalDim].index = -1;
     problem.y[idx] = -1;
     ++idx;
-  }
+  }  
 }
 
-// Legacy Code 2
+// Legacy Code
 void SvmWrapper::init_svm_problem_dynamic(const char *name) {
   int k_sample_l = 0;
   // Negative Sample load & calc number of sample
@@ -178,6 +180,8 @@ void SvmWrapper::eval_vector(const std::vector<double>& w, const double rho) {
 
 SvmWrapper::SvmWrapper(int argc, char**argv, bool auto_initialize) {
   init_svm_parameter();
+  problem.x = NULL;
+  problem.y = NULL;
 
   if (auto_initialize) {
     if (argc == 1) 
@@ -253,7 +257,6 @@ void SvmWrapper::for_presentation(const std::vector<double>& w) {
   // cv::waitKey(0);
 }
 
- 
 void SvmWrapper::get_model() {
   if (svm_check_parameter(&problem, &param) != NULL)
     assert(false);
@@ -287,7 +290,7 @@ void SvmWrapper::get_model() {
   // 標準出力へ表示
   // for (int i = 0; i < model->l; ++i) {
   //   printf("sv_coef : %d : is %lf\n", i, model->sv_coef[0][i]);
-  // }
+  // }o
   printf("rho : %lf\n", model->rho[0]);
 
   // cv::imshowを利用して画像を表示
@@ -296,4 +299,19 @@ void SvmWrapper::get_model() {
 
   // libSVMのインスタンスを開放
   svm_free_and_destroy_model(&model);
+}
+
+std::vector<double> SvmWrapper::get_weight_vector() {
+  if (svm_check_parameter(&problem, &param) != NULL)
+    assert(false);
+  svm_model *model = svm_train(&problem, &param);
+ 
+  std::vector<double> w(kTotalDim, 1e-10);
+  for (int h = 0; h < model->l; ++h) 
+    for (int i = 0; i < kTotalDim; ++i) 
+      w[i] += model->SV[h][i].value * model->sv_coef[0][h];
+  
+  svm_free_and_destroy_model(&model);
+
+  return w;
 }

@@ -3,6 +3,7 @@
 #include "simple_method.h"
 #include "svm.h"
 #include "constant.h"
+#include "random_function.h"
 
 #include <algorithm>
 #include <fstream>
@@ -35,22 +36,12 @@ void SimpleMethod::set_positive_to_svm_problem(const char* positive_file,
 
 void SimpleMethod::set_negative_to_svm_problem(const char* negative_file,
                                                int& idx) {
-  // ローカルクラス
-  class random_function {
-   public:
-    random_function() { srand(static_cast<unsigned>(time(NULL))); }
-    unsigned operator()(unsigned max) {
-      const double temp = static_cast<double>(rand()/static_cast<double>(RAND_MAX));
-      return static_cast<unsigned>(temp*max);
-    }
-  };
-
   std::ifstream negative_set_stream(negative_file);
   std::string line;
   std::vector<std::string> vs;
   while (std::getline(negative_set_stream, line))
     vs.push_back(line);
-  std::random_shuffle(vs.begin(), vs.end(), random_function());
+  std::random_shuffle(vs.begin(), vs.end(), RandomFunction());
   vs.erase(vs.begin() + 50, vs.end());
   set_svm_problem_impl(vs, idx, -1);
 }
@@ -71,6 +62,19 @@ void SimpleMethod::init_svm_problem() {
 }
 
 void SimpleMethod::run() {
+  class Timer {
+    std::string process_name_;
+    clock_t begin_;
+   public:
+    explicit Timer(const char* process_nane) : process_name_(process_nane),
+                                               begin_(clock()) {}
+    ~Timer() {
+      printf("%s - %f sec\n",
+             process_name_.c_str(),
+             static_cast<double>(clock() - begin_) / CLOCKS_PER_SEC);
+    }
+  };
+  Timer timer("simple method");
   this->init_svm_problem();
   svm.run();
 }
