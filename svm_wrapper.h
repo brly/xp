@@ -18,6 +18,8 @@ class SvmWrapper {
   // friend 宣言
   friend class SimpleMethod;
   friend class AssemblingMethod;
+  friend class LinearCombinationMethod;
+  friend class SimpleRepresentVectorFactory;
   
   // LibSVM に必要なパラメータインスタンス
   svm_parameter param;

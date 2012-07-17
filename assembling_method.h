@@ -19,7 +19,7 @@ class AssemblingMethod : public Method {
 
   void set_represents(std::vector<std::string>& represents,
                       const char *file_name);
-
+  
   void get_svm_each_represent(SvmWrapper& temp_svm,
                               const std::string& represent);
   

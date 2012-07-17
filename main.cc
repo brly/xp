@@ -1,5 +1,6 @@
 #include "simple_method.h"
 #include "assembling_method.h"
+#include "linear_combination_method.h"
 
 #include <memory>
 #include <iostream>
@@ -13,6 +14,11 @@ int main(int argc, char **argv) {
       break;
     }
     case '2': {
+      LinearCombinationMethod linear_combination_method;
+      linear_combination_method.run();
+      break;
+    }
+    case 'w': {
       AssemblingMethod assembling_method(argc, argv);
       assembling_method.run();      
       break;
