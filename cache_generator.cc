@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cerrno>
+#include <vector>
 #include <sys/stat.h>
 #include <dirent.h>
 
@@ -20,6 +21,7 @@ namespace {
 
 const std::string kCacheDir = "cache";
 const std::string kFeatureVectorDir = kCacheDir + "/feature_vector";
+const std::string kWeightVectorDir = kCacheDir + "/weight_vector";
 const std::string kImageDir = "easy_test";
 
 const int kUserPermission[3] = { S_IRUSR, S_IWUSR, S_IXUSR };
@@ -28,12 +30,16 @@ const int kOtherPermission[3] = { S_IROTH, S_IWOTH, S_IXOTH };
 
 };
 
+// 前方宣言
 void run();
 int directory_check();
 int get_permission(int permission);
 bool is_exist(const char* path);
 int make_feature_vector_file();
+int make_weight_vector_file();
 
+////////////////////////////////////////////////////////////////////////////////
+// run
 void run() {
   // ディレクトリの存在を確認し、存在しなければ作成
   if (directory_check() != 0) {
@@ -47,10 +53,19 @@ void run() {
     return;
   }
 
+  // 画像に依存している重みベクトルを作成
+  if (make_weight_vector_file() != 0) {
+    puts("画像に依存している重みベクトルを作成中にエラー");
+    return;
+  }
+
   // 正常に終了
   puts("正常に終了しました.");
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// 処理に必要なディレクトリが存在するか確認する
+// 確認後、正常な状態であれば 0 , そうでない場合は 1 が返る
 int directory_check() {
   // ./cache/ が存在するか
   if (!is_exist(kCacheDir.c_str())) {
@@ -82,6 +97,9 @@ int directory_check() {
   return 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// 10進数のパーミッションを引数にとり、(例:755, 700 ..)
+// 実際のパーミッションに設定されるintの値を返す
 int get_permission(int permission) {
   int ret = 0;
 
@@ -114,12 +132,18 @@ int get_permission(int permission) {
   return ret;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// stat 関数を用いて、引数のパスが存在するか確認する関数
+// 存在する場合は true, そうでない場合は false を返す
 bool is_exist(const char* file) {
   // stat 関数用オブジェクト
   struct stat stat_buf;
   return stat(file, &stat_buf) == 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// ./$kImageDir/ を出力先として、画像の特徴ベクトルのデータを作成する関数
+// 内部では chdir 関数が呼ばれているが、関数終了後は、カレントに存在する
 int make_feature_vector_file() {
   DIR *dir_ptr;
   struct stat stat_buf;
@@ -176,10 +200,54 @@ int make_feature_vector_file() {
 
     fclose(file_ptr);
   }
+
+  closedir(dir_ptr);
+
+  // ディレクトリの位置をもとに戻す
+  chdir("..");
   
   return 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// 画像に依存している重みベクトルを作成する関数
+// 
+int make_weight_vector_file() {
+  std::vector<std::string> samples;
+  DIR *dir_ptr;
+  struct stat stat_buf;
+  struct dirent *entry;
+
+  // ./$kFeatureVectorDir/ のファイルオープン
+  if ((dir_ptr = opendir(kFeatureVectorDir.c_str())) == NULL) {
+    return 1;
+  }
+
+  // cd
+  chdir(kFeatureVectorDir.c_str());
+
+  while ((entry = readdir(dir_ptr)) != NULL) {
+    lstat(entry->d_name, &stat_buf);
+
+    // ファイルがディレクトリの場合は飛ばす
+    if (S_ISDIR(stat_buf.st_mode)) continue;
+
+    // オープン(read)先のパスを作成
+    std::string source = entry->d_name;
+
+    // 考慮するサンプルに追加
+    samples.push_back(kFeatureVectorDir + "/" + source);
+  }
+  
+  closedir(dir_ptr);
+
+  for (int i = 0; i < 2; ++i) printf("%s\n", samples[i].c_str());
+  
+  return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// main 
 int main() {
   run();
   return 0;
