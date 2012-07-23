@@ -14,6 +14,7 @@
 #include <cstring>
 #include <cerrno>
 #include <vector>
+#include <algorithm>
 #include <sys/stat.h>
 #include <dirent.h>
 
@@ -170,12 +171,12 @@ int make_feature_vector_file() {
     std::string file = entry->d_name;
 
     // パスが指定の拡張子を持たない場合は飛ばす
-    if (file.find(".pgm") == -1 && file.find(".jpg")) continue;
+    if (file.find(".pgm") == -1 && file.find(".jpg") == -1) continue;
 
     // キャッシュ作成先のパスを作成
     std::string destination = std::string("../") + kFeatureVectorDir + "/" + file;
     destination.erase(destination.size() - 4);
-    
+
     // キャッシュデータが既に存在する場合は飛ばす
     if (is_exist(destination.c_str())) continue;
 
@@ -241,7 +242,8 @@ int make_weight_vector_file() {
   
   closedir(dir_ptr);
 
-  for (int i = 0; i < 2; ++i) printf("%s\n", samples[i].c_str());
+  for (int i = 0; i < samples.size(); ++i)
+    printf("%s\n", samples[i].c_str());
   
   return 0;
 }
