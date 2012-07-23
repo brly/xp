@@ -35,7 +35,7 @@ void SimpleRepresentVectorFactory::set_svm_each_represent(
 
   // 代表をポジティブで設定
   svm.problem.x[0] = new svm_node[kTotalDim + 1];
-  for (int i = 0; i < 0; ++i) {
+  for (int i = 0; i < kTotalDim; ++i) {
     svm.problem.x[0][i].index = i + 1;
     svm.problem.x[0][i].value = rep[i];
   }
