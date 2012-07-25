@@ -313,7 +313,7 @@ int CacheGenerator::make_weight_vector_file() {
       svm.problem.x[idx] = new svm_node[kTotalDim + 1];
       for (int k = 0; k < kTotalDim; ++k) {
         svm.problem.x[idx][k].index = k + 1;
-        svm.problem.x[idx][k].value = feature_vector[indice[j]][k];
+        svm.problem.x[idx][k].value = -feature_vector[indice[j]][k];
       }
       svm.problem.x[idx][kTotalDim].index = -1;
       svm.problem.y[idx] = -1;

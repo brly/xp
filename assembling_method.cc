@@ -82,7 +82,7 @@ void AssemblingMethod::set_negative_groupA_svm(const int kGroupM, int& idx) {
     svm.problem.x[idx] = new svm_node[kTotalDim + 1];
     for (int j = 0; j < kTotalDim; ++j) {
       svm.problem.x[idx][j].index = j + 1;
-      svm.problem.x[idx][j].value = vd[j];
+      svm.problem.x[idx][j].value = -vd[j];
     }
     svm.problem.x[idx][kTotalDim].index = -1;
     svm.problem.y[idx] = -1;

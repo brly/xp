@@ -15,7 +15,7 @@ void SimpleMethod::set_svm_problem_impl(const std::vector<std::string>& files,
     svm.problem.x[idx] = new svm_node[kTotalDim];
     for (int i = 0; i < kTotalDim; ++i) {
       svm.problem.x[idx][i].index = i + 1;
-      svm.problem.x[idx][i].value = hog[i];
+      svm.problem.x[idx][i].value = flag_value * hog[i];
     }
     svm.problem.x[idx][kTotalDim].index = -1;
     svm.problem.y[idx] = flag_value;

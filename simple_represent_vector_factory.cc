@@ -32,7 +32,6 @@ void SimpleRepresentVectorFactory::select_represent(
   // k = 5 に仮定 ( vs.size() >> 5 )
   const int k = 5;
   vs.erase(vs.begin() + k, vs.end());
-  for (int i = 0; i < k; ++i) printf("%s\n", vs[i].c_str());
 }
 
 SimpleRepresentVectorFactory::Mat
@@ -49,7 +48,7 @@ SimpleRepresentVectorFactory::create_represent_vector(
     std::string path = represents[i];
     path.erase(path.size() - 4);
     erase_above_directry(path);
-    path = kWeightVectorDir + "/" + path;
+    path = kWeightVectorDir + "/" + path + ".w";
     printf("%s\n", path.c_str());
 
     // 重みベクトル格納ファイルをオープン

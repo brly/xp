@@ -6,7 +6,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  puts("input method type[1-2]");
+  puts("input method type[1-3]");
   switch (getchar()) {
     case '1': {
       SimpleMethod simple_method(argc, argv);
@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
       linear_combination_method.run();
       break;
     }
-    case 'w': {
+    case '3': {
       AssemblingMethod assembling_method(50, 30);
       assembling_method.run();
       break;
