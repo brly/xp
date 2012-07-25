@@ -35,16 +35,18 @@ visualize_hog.o: visualize_hog.h constant.h
 
 hog.o: hog.h
 
-simple_method.o: simple_method.h svm_wrapper.h hog.h svm.h constant.h random_function.h
+simple_method.o: simple_method.h svm_wrapper.h hog.h svm.h constant.h \
+		 random_function.h timer.h
 
-assembling_method.o: assembling_method.h random_function.h hog.h
+assembling_method.o: assembling_method.h random_function.h hog.h timer.h
 
 simple_represent_vector_factory.o: 	simple_represent_vector_factory.h hog.h \
 					constant.h random_function.h
 
 util.o: util.h
 
-linear_combination_method.o: linear_combination_method.h search_database.h hog.h
+linear_combination_method.o: linear_combination_method.h search_database.h
+			     hog.h timer.h
 
 search_database.o: search_database.h hog.h constant.h
 

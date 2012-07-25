@@ -1,6 +1,7 @@
 #include "linear_combination_method.h"
 #include "search_database.h"
 #include "hog.h"
+#include "timer.h"
 
 #include <algorithm>
 #include <numeric>
@@ -29,5 +30,6 @@ void LinearCombinationMethod::init_weight_vector() {
 }
 
 void LinearCombinationMethod::run() {
+  Timer timer("linear combination method");
   SearchDatabase::search(wq, 10);
 }

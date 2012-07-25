@@ -4,6 +4,7 @@
 #include "svm.h"
 #include "constant.h"
 #include "random_function.h"
+#include "timer.h"
 
 #include <algorithm>
 #include <fstream>
@@ -25,7 +26,6 @@ void SimpleMethod::set_svm_problem_impl(const std::vector<std::string>& files,
 
 void SimpleMethod::set_positive_to_svm_problem(const char* positive_file,
                                                int& idx) {
-  // set_svm_problem_impl(positive_file, idx, 1);
   std::ifstream positive_set_stream(positive_file);
   std::string line;
   std::vector<std::string> vs;
@@ -62,18 +62,6 @@ void SimpleMethod::init_svm_problem() {
 }
 
 void SimpleMethod::run() {
-  class Timer {
-    std::string process_name_;
-    clock_t begin_;
-   public:
-    explicit Timer(const char* process_nane) : process_name_(process_nane),
-                                               begin_(clock()) {}
-    ~Timer() {
-      printf("%s - %f sec\n",
-             process_name_.c_str(),
-             static_cast<double>(clock() - begin_) / CLOCKS_PER_SEC);
-    }
-  };
   Timer timer("simple method");
   this->init_svm_problem();
   svm.run();

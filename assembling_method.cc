@@ -4,6 +4,7 @@
 #include "constant.h"
 #include "util.h"
 #include "search_database.h"
+#include "timer.h"
 
 #include <algorithm>
 #include <fstream>
@@ -101,7 +102,7 @@ void AssemblingMethod::set_negative_groupB_svm(const int kGroupM, int& idx) {
   samples.erase(std::remove(samples.begin(), samples.end(), query), samples.end());
 
   // シャッフルを行い、先頭から kGroupM 個のものについて代表と定める
-  std::random_shuffle(samples.begin(), samples.end());
+  std::random_shuffle(samples.begin(), samples.end(), RandomFunction());
 
   // 代表の重みベクトルを求める
   typedef std::vector<double> Vec;
@@ -171,6 +172,7 @@ void AssemblingMethod::set_negative_groupB_svm(const int kGroupM, int& idx) {
 }
 
 void AssemblingMethod::run() {
+  Timer timer("assembling method");
   this->init_svm_problem();
   SearchDatabase::search(wq, 10);
 }

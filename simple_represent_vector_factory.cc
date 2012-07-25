@@ -2,6 +2,7 @@
 #include "hog.h"
 #include "constant.h"
 #include "random_function.h"
+#include "util.h"
 
 #include <iostream>
 #include <fstream>
@@ -37,6 +38,24 @@ void SimpleRepresentVectorFactory::select_represent(
 SimpleRepresentVectorFactory::Mat
 SimpleRepresentVectorFactory::create_represent_vector(
     const std::string& query) {
+
+  Mat ws;
+  std::vector<std::string> vs;
+  Util::get_file_list(kWeightVectorDir, vs);
+
+  std::random_shuffle(vs.begin(), vs.end(), RandomFunction());
+  const int k = 5;
+  for (int i = 0; i < k; ++i) {
+    Vec t;
+    Util::read_vector_data(vs[i], t);
+    ws.push_back(t);
+  }
+  
+  return ws;
+
+  // following code is legacy
+  {
+    
   // 代表にする画像を決定
   std::vector<std::string> represents;
   select_represent(represents, kImageDir + "/" + query);
@@ -66,6 +85,8 @@ SimpleRepresentVectorFactory::create_represent_vector(
              path.c_str());
       assert(false);
     }
+  }
+
   }
 
   return ws;
