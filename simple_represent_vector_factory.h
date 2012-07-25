@@ -13,8 +13,6 @@ class SimpleRepresentVectorFactory {
   static void select_represent(std::vector<std::string>& vs,
                                const std::string& query);
 
-  static void set_svm_each_represent(SvmWrapper& svm, const std::string& represent);
-  
  public:
   static Mat create_represent_vector(const std::string& query);
 };

@@ -10,7 +10,8 @@ CXXFLAGS := -Wall -std=c++0x -ggdb
 OBJS := main.o svm_wrapper.o svm.o visualize_hog.o \
 	hog.o simple_method.o assembling_method.o  \
 	simple_represent_vector_factory.o linear_combination_method.o \
-	search_database.o
+	search_database.o \
+	util.o
 
 OUTPUT := application
 
@@ -40,6 +41,8 @@ assembling_method.o: assembling_method.h random_function.h hog.h
 
 simple_represent_vector_factory.o: 	simple_represent_vector_factory.h hog.h \
 					constant.h random_function.h
+
+util.o: util.h
 
 linear_combination_method.o: linear_combination_method.h search_database.h hog.h
 

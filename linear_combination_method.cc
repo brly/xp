@@ -8,11 +8,10 @@ void LinearCombinationMethod::init_weight_vector() {
   typedef std::vector<double> Vec;
   typedef std::vector<Vec> Mat;
 
-  // example
-  const std::string query = "easy_test/circle_0.jpg";
+  // example query
+  const std::string query = "circle_0.jpg";
   Mat ws = SimpleRepresentVectorFactory::create_represent_vector(query);
   Hog q(query.c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
-  puts("w's .. complete");
 
   // wqを線型結合で求める
   std::fill(wq.begin(), wq.end(), 0);

@@ -19,8 +19,8 @@ int main(int argc, char **argv) {
       break;
     }
     case 'w': {
-      AssemblingMethod assembling_method(argc, argv);
-      assembling_method.run();      
+      AssemblingMethod assembling_method(50, 30);
+      assembling_method.run();
       break;
     }
   }

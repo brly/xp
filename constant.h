@@ -2,6 +2,8 @@
 #ifndef CONSTANT_H
 #define CONSTANT_H
 
+#include <string>
+
 enum {
   kCellX       = 5,
   kCellY       = 5,
@@ -19,5 +21,10 @@ enum {
   kTotalDim    = kBlockDim * kBlockWidth * kBlockHeight,
   kGlyphSize   = 20
 };
+
+const std::string kCacheDir = "cache";
+const std::string kFeatureVectorDir = kCacheDir + "/feature_vector";
+const std::string kWeightVectorDir = kCacheDir + "/weight_vector";
+const std::string kImageDir = "easy_test";
 
 #endif // CONSTANT_H

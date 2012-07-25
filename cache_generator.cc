@@ -21,11 +21,6 @@
 
 namespace {
 
-const std::string kCacheDir = "cache";
-const std::string kFeatureVectorDir = kCacheDir + "/feature_vector";
-const std::string kWeightVectorDir = kCacheDir + "/weight_vector";
-const std::string kImageDir = "easy_test";
-
 const int kUserPermission[3] = { S_IRUSR, S_IWUSR, S_IXUSR };
 const int kGroupPermission[3] = { S_IRGRP, S_IWGRP, S_IXGRP };
 const int kOtherPermission[3] = { S_IROTH, S_IWOTH, S_IXOTH };
@@ -228,7 +223,6 @@ int CacheGenerator::make_feature_vector_file() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // 画像に依存している重みベクトルを作成する関数
-// 
 int CacheGenerator::make_weight_vector_file() {
   std::vector<std::string> samples;
   DIR *dir_ptr;
@@ -293,7 +287,6 @@ int CacheGenerator::make_weight_vector_file() {
     
     // ランダムに混ぜる
     std::random_shuffle(indice.begin(), indice.end());
-    puts("random shuffle");
 
     // 先頭から kSize だけをサンプルとして扱う
     const int kSize = 10000;
@@ -304,7 +297,6 @@ int CacheGenerator::make_weight_vector_file() {
     svm.problem.l = K;
     svm.problem.y = new double[K];
     svm.problem.x = new svm_node * [K];
-    puts("svm init");
     
     // ポジティブ(自分)の設定
     svm.problem.x[0] = new svm_node[kTotalDim + 1];
@@ -314,7 +306,6 @@ int CacheGenerator::make_weight_vector_file() {
     }
     svm.problem.x[0][kTotalDim].index = -1;
     svm.problem.y[0] = 1;
-    puts("positive set");
     
     // ネガティブの設定
     for (int j = 0, idx = 1; idx < K; ++j) {
@@ -329,10 +320,7 @@ int CacheGenerator::make_weight_vector_file() {
       ++idx;
     }
 
-    puts("negative set");
-
     // ファイルへ出力
-    puts("waiting for SvmWrapper::get_weight_vector()");
     Vec t = svm.get_weight_vector();
     printf("size = %d\n", t.size());
     FILE *file_ptr;
