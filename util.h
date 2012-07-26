@@ -10,8 +10,10 @@
 struct Util {
   // パスを引数として引き取り、destination へ、ファイルのリストを保存して返す
   // ls コマンドに似ている関数
+  // recursive が true である時、パスのディレクトリを再帰的に辿る
   static void get_file_list(const std::string& dir_path,
-                            std::vector<std::string>& destination);
+                            std::vector<std::string>& destination,
+                            const bool recursive);
 
   // コンパイラの警告(-Wunused-result)を避けるための chdir 関数ラッパ
   // クラス外から呼び出さないほうが無難 (戻すのを忘れてしまうため) 
@@ -23,12 +25,27 @@ struct Util {
   static void read_vector_data(const std::string& path,
                                std::vector<double>& destination);
 
+  // 数値のみが記述されているデータファイルの書き込みを行う
+  // 型は double に限定し、すべてのデータを書き込む
+  static void write_vector_data(const std::string& path,
+                                const std::vector<double>& source);
+
   // Linux における、pwd コマンドの実装
   static void pwd();
 
   // std::vector<double> 同士の内積を返す
   static double get_vector_dot(const std::vector<double>& lhs,
                                const std::vector<double>& rhs);
+
+  // 与えられたパスについて、ディレクトリが存在しない場合は
+  // 再帰的に mkdir() を繰り返す
+  static void mkdir_rec(std::string path);
+
+  // パスが存在するか
+  static bool is_exist(const char* path);
+
+  // mkdir 関数の引数の mode パーミッション を作成する
+  static int get_permission(const int permission);
 };
 
 #endif // UTIL_H_

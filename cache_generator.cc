@@ -7,6 +7,7 @@
 #include "hog.h"
 #include "constant.h"
 #include "svm_wrapper.h"
+#include "util.h"
 
 #include <iostream>
 #include <string>
@@ -157,66 +158,29 @@ bool CacheGenerator::is_exist(const char* file) {
 // ./$kImageDir/ を出力先として、画像の特徴ベクトルのデータを作成する関数
 // 内部では chdir 関数が呼ばれているが、関数終了後は、カレントに存在する
 int CacheGenerator::make_feature_vector_file() {
-  DIR *dir_ptr;
-  struct stat stat_buf;
-  struct dirent *entry;
-
-  // ./$kImageDir/ のファイルオープン
-  if ((dir_ptr = opendir(kImageDir.c_str())) == NULL) {
-    printf("ディレクトリ : %s のオープンに失敗しました.\n",
-           kImageDir.c_str());
-    return 1;
-  }
-
-  // cd 
-  wrap_chdir(kImageDir.c_str());
-
-  // ファイルのグラブ
-  while ((entry = readdir(dir_ptr)) != NULL) {
-    lstat(entry->d_name, &stat_buf);
-    
-    // ファイルがディレクトリの場合は飛ばす
-    if (S_ISDIR(stat_buf.st_mode)) continue;
-
-    // パスを作成
-    std::string file = entry->d_name;
-
-    // パスが指定の拡張子を持たない場合は飛ばす
-    if (file.find(".pgm") == -1 && file.find(".jpg") == -1) continue;
+  std::vector<std::string> files;
+  Util::get_file_list(kImageDir, files, true);
+  for (unsigned i = 0; i < files.size(); ++i) {
+    // 画像ファイルでない場合は飛ばす
+    if (files[i].find(".pgm") == -1 && files[i].find(".jpg") == -1) continue;
 
     // キャッシュ作成先のパスを作成
-    std::string destination = std::string("../") + kFeatureVectorDir + "/" + file;
+    std::string destination = kFeatureVectorDir +
+        files[i].substr(files[i].find("/"));
     destination.erase(destination.size() - 4);
 
-    // キャッシュデータが既に存在する場合は飛ばす
+    // キャッシュが存在する場合は飛ばす
     if (is_exist(destination.c_str())) continue;
 
-    Hog hog(file.c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
+    // キャッシュ作成先のディレクトリに問題がないか確認
+    Util::mkdir_rec(destination);
+    
+    Hog hog(files[i].c_str(), kCellX, kBlockX, kResizeX, kResizeY,
+            kOrientation);
+    Util::write_vector_data(destination, hog.get_data());
 
-    // キャッシュ作成先のファイルオープン
-    FILE *file_ptr = nullptr;
-    if ((file_ptr = fopen(destination.c_str(), "w")) == NULL) {
-      printf("[%s] : のファイルオープンに失敗.\n", destination.c_str());
-      printf("%s\n", strerror(errno));
-      return 1;
-    }
-
-    // ファイルへ書き込み
-    for (int i = 0; i < kTotalDim; ++i) {
-      if (i) fputc(' ', file_ptr);
-      if (fprintf(file_ptr, "%f", hog[i]) < 0) {
-        printf("%s : のファイル書き込みに失敗.\n", destination.c_str());
-        return 1;
-      }
-    }
-
-    fclose(file_ptr);
+    printf("%s is created.\n", destination.c_str());
   }
-
-  closedir(dir_ptr);
-
-  // ディレクトリの位置をもとに戻す
-  wrap_chdir("..");
   
   return 0;
 }
@@ -224,64 +188,33 @@ int CacheGenerator::make_feature_vector_file() {
 ////////////////////////////////////////////////////////////////////////////////
 // 画像に依存している重みベクトルを作成する関数
 int CacheGenerator::make_weight_vector_file() {
-  std::vector<std::string> samples;
-  DIR *dir_ptr;
-  struct stat stat_buf;
-  struct dirent *entry;
-
-  // ./$kFeatureVectorDir/ のファイルオープン
-  if ((dir_ptr = opendir(kFeatureVectorDir.c_str())) == NULL) {
-    return 1;
-  }
-
-  // cd
-  wrap_chdir(kFeatureVectorDir.c_str());
-
-  // サンプルリストに加える
-  while ((entry = readdir(dir_ptr)) != NULL) {
-    lstat(entry->d_name, &stat_buf);
-
-    // ファイルがディレクトリの場合は飛ばす
-    if (S_ISDIR(stat_buf.st_mode)) continue;
-
-    // オープン(read)先のパスを作成
-    std::string source = entry->d_name;
-
-    // 考慮するサンプルに追加
-    samples.push_back(source);
-  }
-  closedir(dir_ptr);
-
-  // cd
-  wrap_chdir("..");
-  wrap_chdir("..");
-
-  // source のファイルを読み込み、配列化しておく
-  // TODO: この処理は関数化したほうがよい
+  std::vector<std::string> files;
+  Util::get_file_list(kFeatureVectorDir, files, true);
+  
   typedef std::vector<double> Vec;
   std::vector<Vec> feature_vector;
-  for (unsigned i = 0; i < samples.size(); ++i) {
-    FILE *fp;
-    std::string src = kFeatureVectorDir + "/" + samples[i];
-    if ((fp = fopen(src.c_str(), "r")) != NULL) {
-      double d;
-      Vec vec;
-      while (fscanf(fp, "%lf", &d) != -1) vec.push_back(d);
-      feature_vector.push_back(vec);
-      fclose(fp);
-    } else {
-      printf("ファイルオープン : %s に失敗した.\n", samples[i].c_str());
-      return 1;
-    }
+
+  for (unsigned i = 0; i < files.size(); ++i) {
+    Vec t;
+    Util::read_vector_data(files[i], t);
+    feature_vector.push_back(t);
   }
-  
+
   // ランダム選択用の配列を作成し初期化
-  std::vector<int> indice(samples.size(), 0);
+  std::vector<int> indice(files.size(), 0);
   for (int i = 0; i < indice.size(); ++i) indice[i] = i;
 
-  for (unsigned i = 0; i < samples.size(); ++i) {
-    // キャッシュ作成先のパスが存在する場合は飛ばす
-    std::string destination = kWeightVectorDir + "/" + samples[i] + ".w";
+  for (unsigned i = 0; i < files.size(); ++i) {
+    // キャッシュ作成先パスを作成
+    std::string destination = files[i];
+    for (int j = 0; j < 2; ++j) 
+      destination = destination.substr(destination.find("/") + 1);
+    destination = kWeightVectorDir + "/" + destination + ".w";
+
+    // キャッシュ先ディレクトリ確認
+    Util::mkdir_rec(destination);
+    
+    // キャッシュ作成先のパスが存在する場合は飛ばす    
     if (is_exist(destination.c_str())) continue;
     printf("%s\n", destination.c_str());
     
@@ -322,20 +255,7 @@ int CacheGenerator::make_weight_vector_file() {
 
     // ファイルへ出力
     Vec t = svm.get_weight_vector();
-    printf("size = %d\n", t.size());
-    FILE *file_ptr;
-    if ((file_ptr = fopen(destination.c_str(), "w")) != NULL) {
-      for (unsigned j = 0; j < kTotalDim; ++j) {
-        if (j) fputc(' ', file_ptr);
-        fprintf(file_ptr, "%f", t[j]);
-      }
-      fclose(file_ptr);
-    } else {
-      printf("ファイル書き込みエラー : %s\n", destination.c_str());
-      return 1;
-    }
-
-    printf("%s is created successfully.\n", destination.c_str());
+    Util::write_vector_data(destination, t);
   }
   
   return 0;

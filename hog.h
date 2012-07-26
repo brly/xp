@@ -61,6 +61,10 @@ class Hog {
   double operator[](unsigned idx) const {
     return destination_.at(idx);
   }
+
+  const std::vector<double> & get_data() const {
+    return destination_;
+  }
 };
 
 #endif // HOG_H
