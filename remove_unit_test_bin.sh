@@ -1,2 +1,2 @@
 #!/bin/sh
-rm -f fileopen_unit_test hog_unit_test log
+rm -f fileopen_unit_test hog_unit_test log cache_generator

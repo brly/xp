@@ -45,7 +45,7 @@ simple_represent_vector_factory.o: 	simple_represent_vector_factory.h hog.h \
 
 util.o: util.h
 
-linear_combination_method.o: linear_combination_method.h search_database.h
+linear_combination_method.o: linear_combination_method.h search_database.h \
 			     hog.h timer.h
 
 search_database.o: search_database.h hog.h constant.h

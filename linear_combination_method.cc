@@ -30,6 +30,9 @@ void LinearCombinationMethod::init_weight_vector() {
 }
 
 void LinearCombinationMethod::run() {
-  Timer timer("linear combination method");
+  {
+    Timer timer("linear combination method");
+    init_weight_vector();
+  }
   SearchDatabase::search(wq, 10);
 }

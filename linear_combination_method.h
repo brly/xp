@@ -25,9 +25,7 @@ class LinearCombinationMethod : public Method {
   void scanning_database_by_wq();
   
  public:
-  explicit LinearCombinationMethod() : wq(kTotalDim, 0) {
-    init_weight_vector();
-  }
+  explicit LinearCombinationMethod() : wq(kTotalDim, 0) {}
   
   void run();
 };

@@ -2,8 +2,10 @@
 #include "hog.h"
 #include "simple_method.h"
 #include "svm.h"
+#include "util.h"
 #include "constant.h"
 #include "random_function.h"
+#include "search_database.h"
 #include "timer.h"
 
 #include <algorithm>
@@ -12,7 +14,9 @@
 void SimpleMethod::set_svm_problem_impl(const std::vector<std::string>& files,
                                         int& idx, const int flag_value) {
   for (unsigned i = 0; i < files.size(); ++i) {
-    Hog hog(files[i].c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
+    // Hog hog(files[i].c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
+    std::vector<double> hog;
+    Util::read_vector_data(files[i], hog);
     svm.problem.x[idx] = new svm_node[kTotalDim];
     for (int i = 0; i < kTotalDim; ++i) {
       svm.problem.x[idx][i].index = i + 1;
@@ -24,23 +28,15 @@ void SimpleMethod::set_svm_problem_impl(const std::vector<std::string>& files,
   }
 }
 
-void SimpleMethod::set_positive_to_svm_problem(const char* positive_file,
-                                               int& idx) {
-  std::ifstream positive_set_stream(positive_file);
-  std::string line;
+void SimpleMethod::set_positive_to_svm_problem(int& idx) {
   std::vector<std::string> vs;
-  while (std::getline(positive_set_stream, line)) 
-    vs.push_back(line);
+  vs.push_back(kFeatureVectorDir + "/circle_0");
   set_svm_problem_impl(vs, idx, 1);
 }
 
-void SimpleMethod::set_negative_to_svm_problem(const char* negative_file,
-                                               int& idx) {
-  std::ifstream negative_set_stream(negative_file);
-  std::string line;
+void SimpleMethod::set_negative_to_svm_problem(int& idx) {
   std::vector<std::string> vs;
-  while (std::getline(negative_set_stream, line))
-    vs.push_back(line);
+  Util::get_file_list(kFeatureVectorDir, vs, true);
   std::random_shuffle(vs.begin(), vs.end(), RandomFunction());
   vs.erase(vs.begin() + 50, vs.end());
   set_svm_problem_impl(vs, idx, -1);
@@ -55,14 +51,19 @@ void SimpleMethod::init_svm_problem() {
   
   // ポジティブサンプルの設定
   int idx = 0;
-  set_positive_to_svm_problem("POSITIVE_sample", idx);
+  set_positive_to_svm_problem(idx);
 
   // ネガティブサンプルの設定
-  set_negative_to_svm_problem("NEGATIVE_sample", idx);
+  set_negative_to_svm_problem(idx);
 }
 
 void SimpleMethod::run() {
-  Timer timer("simple method");
-  this->init_svm_problem();
-  svm.run();
+  std::vector<double> wq;
+  {
+    Timer timer("simple method");
+    this->init_svm_problem();
+    wq = svm.get_weight_vector();
+  }
+
+  SearchDatabase::search(wq, 10);
 }
