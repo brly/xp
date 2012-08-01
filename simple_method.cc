@@ -30,7 +30,13 @@ void SimpleMethod::set_svm_problem_impl(const std::vector<std::string>& files,
 
 void SimpleMethod::set_positive_to_svm_problem(int& idx) {
   std::vector<std::string> vs;
-  vs.push_back(kFeatureVectorDir + "/circle_0");
+  // vs.push_back(kFeatureVectorDir + "/circle_0");
+  query_ = kFeatureVectorDir + query_.substr(query_.find('/'));
+  query_.erase(query_.size() - 4);
+
+  if (!Util::is_exist(query_.c_str())) assert(false);
+  
+  vs.push_back(query_);
   set_svm_problem_impl(vs, idx, 1);
 }
 
@@ -39,6 +45,7 @@ void SimpleMethod::set_negative_to_svm_problem(int& idx) {
   Util::get_file_list(kFeatureVectorDir, vs, true);
   std::random_shuffle(vs.begin(), vs.end(), RandomFunction());
   vs.erase(vs.begin() + 50, vs.end());
+
   set_svm_problem_impl(vs, idx, -1);
 }
 
@@ -65,5 +72,5 @@ void SimpleMethod::run() {
     wq = svm.get_weight_vector();
   }
 
-  SearchDatabase::search(wq, 10);
+  SearchDatabase::search(wq);
 }

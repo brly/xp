@@ -19,8 +19,10 @@ class SearchDatabase {
   static std::vector<std::string> database_string;
   
   static void calc_in_database(const std::vector<double>& wq, const int top_k);
+  static void show_images(const std::vector<std::string>& files);
+  
  public:
-  static void search(const std::vector<double>& wq, const int top_k);
+  static void search(const std::vector<double>& wq, const int top_k = 20);
   static void init();
 };
 

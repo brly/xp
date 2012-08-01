@@ -11,9 +11,9 @@ void LinearCombinationMethod::init_weight_vector() {
   typedef std::vector<Vec> Mat;
 
   // example query
-  const std::string query = kImageDir + "/circle_0.jpg";
-  Mat ws = SimpleRepresentVectorFactory::create_represent_vector(query);
-  Hog q(query.c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
+  // const std::string query = kImageDir + "/circle_0.jpg";
+  Mat ws = SimpleRepresentVectorFactory::create_represent_vector(query_);
+  Hog q(query_.c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
 
   // wqを線型結合で求める
   std::fill(wq.begin(), wq.end(), 0);
@@ -34,5 +34,5 @@ void LinearCombinationMethod::run() {
     Timer timer("linear combination method");
     init_weight_vector();
   }
-  SearchDatabase::search(wq, 10);
+  SearchDatabase::search(wq);
 }

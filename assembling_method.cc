@@ -23,9 +23,9 @@ void AssemblingMethod::init_svm_problem() {
   }
 
   // svm の初期設定
-  svm.problem.l = kM;
-  svm.problem.x = new svm_node * [kM + 1];
-  svm.problem.y = new double[kM + 1];
+  svm.problem.l = kM+1;
+  svm.problem.x = new svm_node * [kM+1];
+  svm.problem.y = new double[kM+1];
 
   // ポジティブの設定
   // TODO: 適当に関数化. あとで修正する
@@ -51,8 +51,7 @@ void AssemblingMethod::init_svm_problem() {
 // ポジティブの設定を行う
 // 外部から変更できるようにのちのち変更する
 void AssemblingMethod::set_positive_svm() {
-  std::string query = "easy_test/circle_0.jpg";
-  Hog h(query.c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
+  Hog h(query_.c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
   
   svm.problem.x[0] = new svm_node[kTotalDim + 1];
   for (int i = 0; i < kTotalDim; ++i) {
@@ -66,7 +65,6 @@ void AssemblingMethod::set_positive_svm() {
 }
 
 void AssemblingMethod::set_negative_groupA_svm(const int kGroupM, int& idx) {
-  std::string query = "circle_0";
   std::vector<std::string> samples;
 
   // ファイルリストを取得
@@ -92,14 +90,14 @@ void AssemblingMethod::set_negative_groupA_svm(const int kGroupM, int& idx) {
 }
 
 void AssemblingMethod::set_negative_groupB_svm(const int kGroupM, int& idx) {
-  std::string query = "circle_0.w";
+  // std::string query = "circle_0.w";
   std::vector<std::string> samples;
   // ファイル集合を取得
   Util::get_file_list(kWeightVectorDir, samples, true);
 
   // クエリが存在する場合は除去
   // その他、そぐわないものについはこの時点で除去すべきである
-  samples.erase(std::remove(samples.begin(), samples.end(), query), samples.end());
+  // samples.erase(std::remove(samples.begin(), samples.end(), query), samples.end());
 
   // シャッフルを行い、先頭から kGroupM 個のものについて代表と定める
   std::random_shuffle(samples.begin(), samples.end(), RandomFunction());
@@ -186,5 +184,5 @@ void AssemblingMethod::run() {
     Timer timer("assembling method");
     this->init_svm_problem();
   }
-  SearchDatabase::search(wq, 10);
+  SearchDatabase::search(wq);
 }

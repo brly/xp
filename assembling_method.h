@@ -31,6 +31,7 @@ class AssemblingMethod : public Method {
   SvmWrapper svm;
   std::vector<double> wq, q;
   const int kM, kBeta;
+  std::string query_;
 
   void init_svm_problem();
 
@@ -41,8 +42,9 @@ class AssemblingMethod : public Method {
   void set_negative_groupB_svm(const int kGroupM, int& idx);
   
  public:
-  explicit AssemblingMethod(int m, int beta) : svm(1, NULL, false), wq(kTotalDim, 0), q(kTotalDim), 
-                                               kM(m), kBeta(beta) {}
+  explicit AssemblingMethod(const std::string& query, int m, int beta)
+      : svm(1, NULL, false), wq(kTotalDim, 0), q(kTotalDim), kM(m), kBeta(beta),
+        query_(query){}
   void run();
 };
 

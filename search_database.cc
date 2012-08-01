@@ -3,10 +3,21 @@
 #include "constant.h"
 #include "util.h"
 
+#include <opencv2/opencv.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <queue>
+
+namespace {
+
+const int extN = 2;
+std::string ext[] = {
+  ".pgm", ".jpg"
+};
+
+};
 
 // static メンバの実体
 std::vector<SearchDatabase::ResultPair> SearchDatabase::result;
@@ -38,6 +49,18 @@ void SearchDatabase::calc_in_database(const std::vector<double>& wq,
   std::reverse(result.begin(), result.end());
 }
 
+void SearchDatabase::show_images(const std::vector<std::string>& files) {
+  // 画像ウィンドウ作成
+  for (unsigned i = 0; i < files.size(); ++i) {
+    cv::Mat m = cv::imread(files[i]);
+    cv::namedWindow("test", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
+    cv::imshow("test", m);
+    cv::waitKey(0);
+  }
+  // キーウェイト
+
+}
+
 void SearchDatabase::search(const std::vector<double>& wq, const int top_k) {
   // 初期化
   result.clear();
@@ -46,10 +69,30 @@ void SearchDatabase::search(const std::vector<double>& wq, const int top_k) {
   calc_in_database(wq, top_k);
 
   // 上位 k 番目までのランキングを出力
+  std::vector<std::string> views;
   for (int i = 0; i < top_k; ++i) {
     SearchDatabase::ResultPair rp = result.at(i);
-    printf("%3d : %30s : %f\n",i , rp.second.c_str(), rp.first);
+
+    // TODO
+    views.push_back(rp.second);
+    // パス変換
+    for (int j = 0; j < 2; ++j) 
+      views.back() = views.back().substr(views.back().find('/') + 1);
+    views.back() = kImageDir + "/" + views.back();
+    // 拡張子を推測
+    for (int j = 0; j < extN; ++j) {
+      std::string s = views.back() + ext[j];
+      if (Util::is_exist(s.c_str())) views.back() = s;
+    }
+
+    printf("%3d : %s : %f\n",i , views.back().c_str(), rp.first);
   }
+  // for (unsigned i = 0; i < views.size(); ++i) printf("%s\n", views[i].c_str());
+
+  // 画像を表示
+  // これはのちのち改良後につくるとする
+  // 今は eog コマンドで代替的に見せる
+  // show_images(views);
 }
 
 void SearchDatabase::init() {

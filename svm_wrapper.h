@@ -14,14 +14,7 @@
 
 class SimpleMethod;
 
-class SvmWrapper {
-  // friend 宣言
-  friend class SimpleMethod;
-  friend class AssemblingMethod;
-  friend class LinearCombinationMethod;
-  friend class SimpleRepresentVectorFactory;
-  friend class CacheGenerator;
-  
+struct SvmWrapper {
   // LibSVM に必要なパラメータインスタンス
   svm_parameter param;
   svm_problem problem;
@@ -54,7 +47,7 @@ class SvmWrapper {
 
   // 画像の特徴量をguiで表現する
   void for_presentation(const std::vector<double>& w);
- public:
+
   // コンストラクタ
   // 各引数はSvmWrapperの初期化方法を表現している
   SvmWrapper(int argc = 1, char**argv = NULL, bool auto_initialize = true);

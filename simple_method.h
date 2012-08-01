@@ -13,6 +13,7 @@
 
 class SimpleMethod : public Method {
   SvmWrapper svm;
+  std::string query_;
 
   void init_svm_problem();
   
@@ -22,7 +23,7 @@ class SimpleMethod : public Method {
   void set_positive_to_svm_problem(int& idx);
   void set_negative_to_svm_problem(int& idx);
  public:
-  SimpleMethod(int argc, char**argv) : svm(argc, argv, false) {}
+  SimpleMethod(const std::string& query) : svm(1, NULL, false), query_(query) {}
   void run();
 };
 

@@ -19,13 +19,15 @@
 
 class LinearCombinationMethod : public Method {
   std::vector<double> wq;
+  std::string query_;
   
   void init_weight_vector();
 
   void scanning_database_by_wq();
   
  public:
-  explicit LinearCombinationMethod() : wq(kTotalDim, 0) {}
+  explicit LinearCombinationMethod(const std::string& query)
+  : wq(kTotalDim, 0), query_(query) {}
   
   void run();
 };
