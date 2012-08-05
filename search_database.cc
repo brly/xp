@@ -9,6 +9,7 @@
 #include <fstream>
 #include <algorithm>
 #include <queue>
+#include <cstdio>
 
 namespace {
 
@@ -33,7 +34,7 @@ void SearchDatabase::calc_in_database(const std::vector<double>& wq,
 
   for (unsigned i = 0; i < database_vector.size(); ++i) {
     double d = Util::get_vector_dot(wq, database_vector[i]);
-    if (pq.size() < top_k) {
+    if (pq.size() < static_cast<unsigned>(top_k)) {
       pq.push(SearchDatabase::ResultPair(d, database_string[i]));
     } else if (pq.top().first < d) {
       pq.pop();
@@ -85,7 +86,8 @@ void SearchDatabase::search(const std::vector<double>& wq, const int top_k) {
       if (Util::is_exist(s.c_str())) views.back() = s;
     }
 
-    printf("%3d : %s : %f\n",i , views.back().c_str(), rp.first);
+    // printf("%3d : %s : %f\n",i , views.back().c_str(), rp.first);
+    printf("%s\n", views.back().c_str());
   }
   // for (unsigned i = 0; i < views.size(); ++i) printf("%s\n", views[i].c_str());
 
@@ -96,6 +98,9 @@ void SearchDatabase::search(const std::vector<double>& wq, const int top_k) {
 }
 
 void SearchDatabase::init() {
+  // 初期化中であることを通知
+  printf("Database is being initialized now.\n");
+  
   // ./$kFeatureVectorDir/ 配下の画像リストを取得
   Util::get_file_list(kFeatureVectorDir, database_string, true);
 
@@ -105,4 +110,7 @@ void SearchDatabase::init() {
     Util::read_vector_data(database_string[i], t);
     database_vector.push_back(t);
   }
+
+  // 初期化処理が完了したことを通知
+  printf("Database was constructed completely.\n");
 }

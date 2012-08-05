@@ -44,7 +44,7 @@ void SvmWrapper::init_svm_parameter() {
   param.coef0 = 0;
   param.nu = 0.5;
   param.cache_size = 100;
-  param.C = 1;
+  param.C = 100;
   param.eps = 1e-3;
   param.p = 0.1;
   param.shrinking = 1;
