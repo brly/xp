@@ -14,6 +14,7 @@ class NormalMethod : public Method {
       : query_(query) {}
   
   void run();
+  void run(std::vector<std::string>& ranking);
 };
 
 #endif // NORMAL_METHOD_H_

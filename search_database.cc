@@ -97,12 +97,23 @@ void SearchDatabase::search(const std::vector<double>& wq, const int top_k) {
   // show_images(views);
 }
 
+void SearchDatabase::search(const std::vector<double>& wq,
+                            std::vector<std::string>& dest, const int top_k) {
+  result.clear();
+  calc_in_database(wq, top_k);
+  for (int i = 0; i < top_k; ++i) {
+    SearchDatabase::ResultPair rp = result.at(i);
+    // 拡張子変換とかはあとで
+    dest.push_back(rp.second);
+  }
+}
+
 void SearchDatabase::init() {
   // 初期化中であることを通知
   printf("Database is being initialized now.\n");
   
   // ./$kFeatureVectorDir/ 配下の画像リストを取得
-  Util::get_file_list(kFeatureVectorDir, database_string, true);
+  Util::get_file_list(kFeatureVectorDir + "/caltech101/ant", database_string, true);
 
   // ベクトルデータを保存
   for (unsigned i = 0; i < database_string.size(); ++i) {

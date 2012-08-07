@@ -30,6 +30,7 @@ class LinearCombinationMethod : public Method {
   : wq(kTotalDim, 0), query_(query) {}
   
   void run();
+  void run(std::vector<std::string>& ranking);
 };
 
 #endif // LINEAR_COMBINATION_METHOD_H_

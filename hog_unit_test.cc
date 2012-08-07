@@ -11,21 +11,14 @@
 #include <iostream>
 #include <fstream>
 
+#include <opencv2/gpu/gpu.hpp>
+#include <opencv2/gpu/gpumat.hpp>
 
 int main() {
+  Hog h("easy_test/circle_0.jpg", kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
 
-  using namespace std;
-
-  ifstream ifs("NEGATIVE_database");
-  string line;
-  while (ifs >> line) {
-    Hog h(line.c_str(), 5, 3, 40, 40, 9);
-    // for (unsigned i = 0; i < kTotalDim; ++i)
-    //   if (h[i])
-    //     printf("%f\n", h[i]);
-    printf("%s\n", line.c_str());
-  }
-
+  std::cout << h.get_data().size() << std::endl;
+  
   return 0;
 }
 

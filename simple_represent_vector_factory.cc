@@ -22,7 +22,7 @@ SimpleRepresentVectorFactory::create_represent_vector(
   const int k = 5;
   for (int i = 0; i < k; ++i) {
     Vec t;
-    printf("%s\n", vs[i].c_str());
+    // printf("%s\n", vs[i].c_str());
     Util::read_vector_data(vs[i], t);
     ws.push_back(t);
   }

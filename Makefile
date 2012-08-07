@@ -10,7 +10,8 @@ CXXFLAGS := -Wall -std=c++0x -ggdb
 OBJS := main.o svm_wrapper.o svm.o visualize_hog.o \
 	hog.o simple_method.o assembling_method.o  \
 	simple_represent_vector_factory.o linear_combination_method.o \
-	search_database.o util.o base_method.o normal_method.o 
+	search_database.o util.o base_method.o normal_method.o \
+	experiment_manager.o
 
 OUTPUT := application
 
@@ -27,7 +28,8 @@ $(OUTPUT): $(OBJS)
 ## Header dependency
 .h.cc:
 main.o: base_method.h simple_method.h assembling_method.h \
-	linear_combination_method.h timer.h search_database.h normal_method.h 
+	linear_combination_method.h timer.h search_database.h normal_method.h \
+	experiment_manager.h
 
 svm_wrapper.o: svm_wrapper.h hog.h constant.h visualize_hog.h
 
@@ -54,6 +56,11 @@ base_method.o: constant.h svm_wrapper.h base_method.h hog.h random_function.h \
 		util.h timer.h search_database.h
 
 normal_method.o: method.h constant.h normal_method.h hog.h search_database.h
+
+experiment_manager.o: experiment_manager.h constant.h random_function.h \
+			util.h base_method.h simple_method.h \
+			linear_combination_method.h assembling_method.h \
+			normal_method.h
 
 ################################################################################
 ## Clean

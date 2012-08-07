@@ -21,12 +21,12 @@ void LinearCombinationMethod::init_weight_vector() {
   for (int i = 0; i < N; ++i) {
     double a = 0;
     for (int j = 0; j < kTotalDim; ++j) a += ws[i][j] * q[j];
-    printf("%d : %f\n", i, a);
+    // printf("%d : %f\n", i, a);
     for (int j = 0; j < kTotalDim; ++j) wq[j] += a * q[j];
   }
 
   // 念の為, wq の和を表示してみる
-  printf("Wq sum is %f.\n", std::accumulate(wq.begin(), wq.end(), 0.0));
+  // printf("Wq sum is %f.\n", std::accumulate(wq.begin(), wq.end(), 0.0));
 }
 
 void LinearCombinationMethod::run() {
@@ -35,4 +35,12 @@ void LinearCombinationMethod::run() {
     init_weight_vector();
   }
   SearchDatabase::search(wq);
+}
+
+void LinearCombinationMethod::run(std::vector<std::string>& ranking) {
+  {
+    Timer timer("linear combination method");
+    init_weight_vector();
+  }
+  SearchDatabase::search(wq, ranking, 10);
 }

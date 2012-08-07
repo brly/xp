@@ -93,7 +93,8 @@ void AssemblingMethod::set_negative_groupB_svm(const int kGroupM, int& idx) {
   // std::string query = "circle_0.w";
   std::vector<std::string> samples;
   // ファイル集合を取得
-  Util::get_file_list(kWeightVectorDir, samples, true);
+  // Util::get_file_list(kWeightVectorDir, samples, true);
+  Util::get_file_list(kWeightVectorDir + "/caltech101/ant", samples, true);
 
   // クエリが存在する場合は除去
   // その他、そぐわないものについはこの時点で除去すべきである
@@ -123,7 +124,8 @@ void AssemblingMethod::set_negative_groupB_svm(const int kGroupM, int& idx) {
   // この処理は常に決定的なのでどこか別で初期化時などにしたほうがいい
   std::vector<Vec> db;
   std::vector<std::string> db_str;
-  Util::get_file_list(kFeatureVectorDir, db_str, true);
+  // Util::get_file_list(kFeatureVectorDir, db_str, true);
+  Util::get_file_list(kFeatureVectorDir + "/caltech101", db_str, true);
   for (unsigned i = 0; i < db_str.size(); ++i) {
     Vec t;
     Util::read_vector_data(db_str[i], t);
@@ -151,8 +153,8 @@ void AssemblingMethod::set_negative_groupB_svm(const int kGroupM, int& idx) {
     std::priority_queue<P, std::vector<P>, std::greater<P> > pq;
 
     // 現在は代表元に近いデータを3つに固定 --> 改善のよちあり
+    // 事前計算するそうです
     // hard coding is 3
-
     for (unsigned j = 0; j < db.size(); ++j) {
       if (samples[i] == db_str[j]) continue;
       double d = Util::get_vector_dot(ws[select_idx], db[j]);
@@ -163,14 +165,27 @@ void AssemblingMethod::set_negative_groupB_svm(const int kGroupM, int& idx) {
         pq.push(P(d, j));
       }
     }
+    
+    // 自身を加える
+    if (i < kGroupM) {
+      svm.problem.x[idx] = new svm_node[kTotalDim + 1];
+      for (int j = 0; j < kTotalDim; ++j) {
+        svm.problem.x[idx][j].index = j + 1;
+        svm.problem.x[idx][j].value = -ws[select_idx][j];
+      }
+      svm.problem.x[idx][kTotalDim].index = -1;
+      svm.problem.y[idx] = -1;
+      ++i; ++idx;
+    }
 
+    // 近いものを加える
     while (!pq.empty() && i < kGroupM) {
       P p = pq.top(); pq.pop();
       const int v = p.second;
       svm.problem.x[idx] = new svm_node[kTotalDim + 1];
       for (int j = 0; j < kTotalDim; ++j) {
         svm.problem.x[idx][j].index = j + 1;
-        svm.problem.x[idx][j].value = db[v][j];
+        svm.problem.x[idx][j].value = -db[v][j];
       }
       svm.problem.x[idx][kTotalDim].index = -1;
       svm.problem.y[idx] = -1;
@@ -185,4 +200,12 @@ void AssemblingMethod::run() {
     this->init_svm_problem();
   }
   SearchDatabase::search(wq);
+}
+
+void AssemblingMethod::run(std::vector<std::string>& ranking) {
+  {
+    Timer timer("assembling method");
+    this->init_svm_problem();
+  }
+  SearchDatabase::search(wq, ranking, 10);
 }

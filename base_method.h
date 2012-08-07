@@ -5,9 +5,6 @@
 #include "svm_wrapper.h"
 #include "method.h"
 
-#include <vector>
-#include <string>
-
 // 元となる手法
 // wq を導出するため、学習サンプルを1万必要とする
 
@@ -25,6 +22,7 @@ class BaseMethod : public Method {
       wq(kTotalDim, 0),
       query_(query) {}
   void run();
+  void run(std::vector<std::string>& ranking);
 };
 
 #endif // BASE_METHOD_H_

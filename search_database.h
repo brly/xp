@@ -22,7 +22,12 @@ class SearchDatabase {
   static void show_images(const std::vector<std::string>& files);
   
  public:
+  // 検索を行い、結果を標準出力へ出力
   static void search(const std::vector<double>& wq, const int top_k = 20);
+  // 検索を行い、結果を引数へ与え、出力は行わない
+  static void search(const std::vector<double>& wq, std::vector<std::string>& dest,
+                     const int top_k = 20);
+  
   static void init();
 };
 

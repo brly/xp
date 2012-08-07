@@ -25,6 +25,7 @@ class SimpleMethod : public Method {
  public:
   SimpleMethod(const std::string& query) : svm(1, NULL, false), query_(query) {}
   void run();
+  void run(std::vector<std::string>& ranking);
 };
 
 #endif // SIMPLE_METHOD_H_

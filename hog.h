@@ -58,6 +58,10 @@ class Hog {
     make_feature();
   }
 
+  ~Hog() {
+    source_.release();
+  }
+
   double operator[](unsigned idx) const {
     return destination_.at(idx);
   }

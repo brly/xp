@@ -56,6 +56,8 @@ void CacheGenerator::run() {
     return;
   }
 
+  return;
+  
   // 画像に依存している重みベクトルを作成
   if (make_weight_vector_file() != 0) {
     puts("画像に依存している重みベクトルを作成中にエラー");
@@ -189,7 +191,8 @@ int CacheGenerator::make_feature_vector_file() {
 // 画像に依存している重みベクトルを作成する関数
 int CacheGenerator::make_weight_vector_file() {
   std::vector<std::string> files;
-  Util::get_file_list(kFeatureVectorDir, files, true);
+  // Util::get_file_list(kFeatureVectorDir, files, true);
+  Util::get_file_list(kFeatureVectorDir + "/caltech101", files, true);
   
   typedef std::vector<double> Vec;
   std::vector<Vec> feature_vector;

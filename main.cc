@@ -5,6 +5,7 @@
 #include "normal_method.h"
 #include "timer.h"
 #include "search_database.h"
+#include "experiment_manager.h"
 
 #include <memory>
 #include <iostream>
@@ -27,7 +28,6 @@ void set_query(std::string& s) {
     printf("%d : %s\n", i, querys[i].c_str());
 
   int input;
-
   do {
     fscanf(stdin, " %d", &input);
     if (input < 0 || 1 < input) {
@@ -44,6 +44,19 @@ void set_query(std::string& s) {
 int main(int argc, char **argv) {
   // データベースを初期化
   SearchDatabase::init();
+
+  // 一時的にこんな感じです
+  // for (;;) {
+  //   bool flag = false;
+  //   ExperimentManager exp(5);
+  //   exp.run();
+  //   break;
+  // }
+
+  ExperimentManager exp(5);
+  exp.run();
+  
+  return 0;
 
   for (;;) {
     // 終了フラグ変数
@@ -83,7 +96,7 @@ int main(int argc, char **argv) {
         break;
       }
       case '3': {
-        AssemblingMethod assembling_method(query, 50, 30);
+        AssemblingMethod assembling_method(query, 20, 50);
         assembling_method.run();
         break;
       }

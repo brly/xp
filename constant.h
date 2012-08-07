@@ -5,14 +5,14 @@
 #include <string>
 
 enum {
-  kCellX       = 5,
-  kCellY       = 5,
+  kCellX       = 8,
+  kCellY       = 8,
   kCellBin     = 9,
   kOrientation = kCellBin,
-  kBlockX      = 3,
-  kBlockY      = 3,
-  kResizeX     = 40,
-  kResizeY     = 40,
+  kBlockX      = 2,
+  kBlockY      = 2,
+  kResizeX     = 96,
+  kResizeY     = 96,
   kCellWidth   = kResizeX / kCellX,
   kCellHeight  = kResizeY / kCellY,
   kBlockWidth  = kCellWidth - kBlockX + 1,

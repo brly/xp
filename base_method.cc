@@ -6,7 +6,7 @@
 #include "search_database.h"
 
 namespace {
-const int kL = 10001;
+const int kL = 11;
 };
 
 void BaseMethod::init_svm_problem() {
@@ -35,7 +35,6 @@ void BaseMethod::set_positive_svm() {
 
 void BaseMethod::set_negative_svm() {
   std::vector<std::string> files;
-
   Util::get_file_list(kFeatureVectorDir, files, true);
   std::random_shuffle(files.begin(), files.end(), RandomFunction());
 
@@ -58,4 +57,11 @@ void BaseMethod::run() {
   this->init_svm_problem();
   wq = svm.get_weight_vector();
   SearchDatabase::search(wq);
+}
+
+void BaseMethod::run(std::vector<std::string>& ranking) {
+  Timer timer("base method");
+  this->init_svm_problem();
+  wq = svm.get_weight_vector();
+  SearchDatabase::search(wq, ranking, 10);
 }

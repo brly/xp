@@ -45,7 +45,9 @@ class AssemblingMethod : public Method {
   explicit AssemblingMethod(const std::string& query, int m, int beta)
       : svm(1, NULL, false), wq(kTotalDim, 0), q(kTotalDim), kM(m), kBeta(beta),
         query_(query){}
+  
   void run();
+  void run(std::vector<std::string>& ranking);
 };
 
 #endif // ASSEMBLING_METHOD_H_

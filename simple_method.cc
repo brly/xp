@@ -17,7 +17,7 @@ void SimpleMethod::set_svm_problem_impl(const std::vector<std::string>& files,
     // Hog hog(files[i].c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
     std::vector<double> hog;
     Util::read_vector_data(files[i], hog);
-    svm.problem.x[idx] = new svm_node[kTotalDim];
+    svm.problem.x[idx] = new svm_node[kTotalDim + 1];
     for (int i = 0; i < kTotalDim; ++i) {
       svm.problem.x[idx][i].index = i + 1;
       svm.problem.x[idx][i].value = flag_value * hog[i];
@@ -73,4 +73,15 @@ void SimpleMethod::run() {
   }
 
   SearchDatabase::search(wq);
+}
+
+void SimpleMethod::run(std::vector<std::string>& ranking) {
+  std::vector<double> wq;
+  {
+    Timer timer("simple method");
+    this->init_svm_problem();
+    wq = svm.get_weight_vector();
+  }
+
+  SearchDatabase::search(wq, ranking, 10);
 }

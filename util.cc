@@ -194,5 +194,3 @@ int Util::get_permission(int permission) {
   }
   return ret;
 }
-
-
