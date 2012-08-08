@@ -225,11 +225,11 @@ void SvmWrapper::for_presentation(const std::vector<double>& w) {
     after_w[i] *= w[i];
   }
 
-  cv::namedWindow("before", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
-  cv::namedWindow("after", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
-  cv::imshow("before", VisualizeHog::generate_mat(before_w));
-  cv::imshow("after", VisualizeHog::generate_mat(after_w));
-  cv::waitKey(0);
+  // cv::namedWindow("before", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
+  // cv::namedWindow("after", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
+  // cv::imshow("before", VisualizeHog::generate_mat(before_w));
+  // cv::imshow("after", VisualizeHog::generate_mat(after_w));
+  // cv::waitKey(0);
   
   // std::shared_ptr<double> feat(Hog::get_feature(test_file));
   // cv::Mat before = VisualizeHog::generate_mat(feat.get());

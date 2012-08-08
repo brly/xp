@@ -191,8 +191,7 @@ int CacheGenerator::make_feature_vector_file() {
 // 画像に依存している重みベクトルを作成する関数
 int CacheGenerator::make_weight_vector_file() {
   std::vector<std::string> files;
-  // Util::get_file_list(kFeatureVectorDir, files, true);
-  Util::get_file_list(kFeatureVectorDir + "/caltech101", files, true);
+  Util::get_file_list(kFeatureVectorDir, files, true);
   
   typedef std::vector<double> Vec;
   std::vector<Vec> feature_vector;
@@ -212,7 +211,8 @@ int CacheGenerator::make_weight_vector_file() {
     std::string destination = files[i];
     for (int j = 0; j < 2; ++j) 
       destination = destination.substr(destination.find("/") + 1);
-    destination = kWeightVectorDir + "/" + destination + ".w";
+    // destination = kWeightVectorDir + "/" + destination + ".w";
+    destination = "~/Dropbox/" + kWeightVectorDir + "/" + destination + ".w";
 
     // キャッシュ先ディレクトリ確認
     Util::mkdir_rec(destination);

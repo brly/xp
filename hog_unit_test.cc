@@ -1,4 +1,4 @@
-//
+3//
 // hog.h ユニットテスト
 //
 
@@ -13,6 +13,7 @@
 
 #include <opencv2/gpu/gpu.hpp>
 #include <opencv2/gpu/gpumat.hpp>
+
 
 int main() {
   Hog h("easy_test/circle_0.jpg", kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
