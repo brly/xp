@@ -30,6 +30,14 @@ struct Util {
   static void write_vector_data(const std::string& path,
                                 const std::vector<double>& source);
 
+<<<<<<< HEAD
+  // 文字列ベクトルのファイル書き込みを行う
+  // 型は std::vector<std::string> に限定し、すべてのデータを書き込む
+  static void write_string_vector_data(const std::string& path,
+                                       const std::vector<std::string>& source);
+
+=======
+>>>>>>> origin/master
   // Linux における、pwd コマンドの実装
   static void pwd();
 

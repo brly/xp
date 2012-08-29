@@ -3,6 +3,10 @@
 #include "assembling_method.h"
 #include "linear_combination_method.h"
 #include "normal_method.h"
+<<<<<<< HEAD
+#include "c_method.h"
+=======
+>>>>>>> origin/master
 #include "timer.h"
 #include "search_database.h"
 #include "experiment_manager.h"
@@ -10,6 +14,11 @@
 #include <memory>
 #include <iostream>
 
+<<<<<<< HEAD
+#define ENABLE_EXPERIMENT_MANAGER
+
+=======
+>>>>>>> origin/master
 namespace {
 
 std::string methods[] = {
@@ -39,12 +48,26 @@ void set_query(std::string& s) {
   s = querys[input];
 }
 
+<<<<<<< HEAD
+}; // anonymous namespace
+=======
 };
+>>>>>>> origin/master
 
 int main(int argc, char **argv) {
   // データベースを初期化
   SearchDatabase::init();
 
+<<<<<<< HEAD
+#ifdef ENABLE_EXPERIMENT_MANAGER  
+  
+  ExperimentManager exp(1);
+  exp.run();  
+  return 0;
+
+#else
+
+=======
   // 一時的にこんな感じです
   // for (;;) {
   //   bool flag = false;
@@ -58,6 +81,7 @@ int main(int argc, char **argv) {
   
   return 0;
 
+>>>>>>> origin/master
   for (;;) {
     // 終了フラグ変数
     bool flag = false;
@@ -72,7 +96,11 @@ int main(int argc, char **argv) {
     puts("set query");
     set_query(query);
     
+<<<<<<< HEAD
+    puts("input method type [0-4]");
+=======
     puts("input method type[0-4]");
+>>>>>>> origin/master
     for (int i = 0; i < methodsN; ++i)
       printf("%d : %s\n", i, methods[i].c_str());
 
@@ -105,6 +133,14 @@ int main(int argc, char **argv) {
         normal_method.run();
         break;
       }
+<<<<<<< HEAD
+      case '5': {
+        CMethod c_method(query, 100, 50);
+        c_method.run();
+        break;
+      }
+=======
+>>>>>>> origin/master
       case 'q': {
         flag = true;
         break;
@@ -118,6 +154,11 @@ int main(int argc, char **argv) {
     // 終了フラグ
     if (flag) break;
   }
+<<<<<<< HEAD
+  return 0;
+#endif // ENABLE_EXPERIMENT_MANAGER
+=======
 
   return 0;
+>>>>>>> origin/master
 }

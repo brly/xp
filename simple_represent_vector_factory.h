@@ -11,7 +11,12 @@ class SimpleRepresentVectorFactory {
   typedef std::vector<Vec> Mat;
   
  public:
+<<<<<<< HEAD
+  static Mat create_represent_vector(const std::string& query,
+                                     const int k = 5);
+=======
   static Mat create_represent_vector(const std::string& query);
+>>>>>>> origin/master
 };
 
 #endif // SIMPLE_REPRESENT_VECTOR_FACTORY_H_

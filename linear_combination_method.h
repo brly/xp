@@ -20,14 +20,23 @@
 class LinearCombinationMethod : public Method {
   std::vector<double> wq;
   std::string query_;
+<<<<<<< HEAD
+  const int k_;
+=======
+>>>>>>> origin/master
   
   void init_weight_vector();
 
   void scanning_database_by_wq();
   
  public:
+<<<<<<< HEAD
+  explicit LinearCombinationMethod(const std::string& query, const int k = 10)
+      : wq(kTotalDim, 0), query_(query), k_(k) {}
+=======
   explicit LinearCombinationMethod(const std::string& query)
   : wq(kTotalDim, 0), query_(query) {}
+>>>>>>> origin/master
   
   void run();
   void run(std::vector<std::string>& ranking);

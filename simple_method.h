@@ -14,6 +14,10 @@
 class SimpleMethod : public Method {
   SvmWrapper svm;
   std::string query_;
+<<<<<<< HEAD
+  const int k_;
+=======
+>>>>>>> origin/master
 
   void init_svm_problem();
   
@@ -23,7 +27,12 @@ class SimpleMethod : public Method {
   void set_positive_to_svm_problem(int& idx);
   void set_negative_to_svm_problem(int& idx);
  public:
+<<<<<<< HEAD
+  SimpleMethod(const std::string& query, const int k = 50)
+      : svm(1, NULL, false), query_(query), k_(k) {}
+=======
   SimpleMethod(const std::string& query) : svm(1, NULL, false), query_(query) {}
+>>>>>>> origin/master
   void run();
   void run(std::vector<std::string>& ranking);
 };

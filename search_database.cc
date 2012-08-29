@@ -90,30 +90,58 @@ void SearchDatabase::search(const std::vector<double>& wq, const int top_k) {
     printf("%s\n", views.back().c_str());
   }
   // for (unsigned i = 0; i < views.size(); ++i) printf("%s\n", views[i].c_str());
+<<<<<<< HEAD
+=======
 
   // 画像を表示
   // これはのちのち改良後につくるとする
   // 今は eog コマンドで代替的に見せる
   // show_images(views);
+>>>>>>> origin/master
 }
 
 void SearchDatabase::search(const std::vector<double>& wq,
                             std::vector<std::string>& dest, const int top_k) {
   result.clear();
+<<<<<<< HEAD
+  if (top_k == 0) {
+    calc_in_database(wq, database_vector.size());
+    for (int i = 0; i < database_vector.size(); ++i) {
+      SearchDatabase::ResultPair rp = result.at(i);
+      // 拡張子変換とかはあとで
+      dest.push_back(rp.second);
+    }
+  } else {
+    calc_in_database(wq, top_k);
+    for (int i = 0; i < top_k; ++i) {
+    SearchDatabase::ResultPair rp = result.at(i);
+    // 拡張子変換とかはあとで
+    dest.push_back(rp.second);
+    }
+=======
   calc_in_database(wq, top_k);
   for (int i = 0; i < top_k; ++i) {
     SearchDatabase::ResultPair rp = result.at(i);
     // 拡張子変換とかはあとで
     dest.push_back(rp.second);
+>>>>>>> origin/master
   }
 }
 
 void SearchDatabase::init() {
   // 初期化中であることを通知
+<<<<<<< HEAD
+  // printf("Database is being initialized now.\n");
+  
+  // ./$kFeatureVectorDir/ 配下の画像リストを取得
+  // Util::get_file_list(kFeatureVectorDir + "/caltech101/ant", database_string, true);
+  Util::get_file_list(kFeatureVectorDir, database_string, true);
+=======
   printf("Database is being initialized now.\n");
   
   // ./$kFeatureVectorDir/ 配下の画像リストを取得
   Util::get_file_list(kFeatureVectorDir + "/caltech101/ant", database_string, true);
+>>>>>>> origin/master
 
   // ベクトルデータを保存
   for (unsigned i = 0; i < database_string.size(); ++i) {
@@ -123,5 +151,9 @@ void SearchDatabase::init() {
   }
 
   // 初期化処理が完了したことを通知
+<<<<<<< HEAD
+  // printf("Database was constructed completely.\n");
+=======
   printf("Database was constructed completely.\n");
+>>>>>>> origin/master
 }

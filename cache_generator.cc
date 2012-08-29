@@ -16,6 +16,11 @@
 #include <cstring>
 #include <cerrno>
 #include <vector>
+<<<<<<< HEAD
+#include <utility>
+#include <queue>
+=======
+>>>>>>> origin/master
 #include <algorithm>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -36,6 +41,13 @@ class CacheGenerator {
   static bool is_exist(const char* path);
   static int make_feature_vector_file();
   static int make_weight_vector_file();
+<<<<<<< HEAD
+  static int make_nearest_image_file();
+  static void register_svm(SvmWrapper& svm,
+                           const std::vector<double>& data,
+                           const int idx, const int value);
+=======
+>>>>>>> origin/master
   static void wrap_chdir(const char* path);
  public:
   static void run();
@@ -56,11 +68,24 @@ void CacheGenerator::run() {
     return;
   }
 
+<<<<<<< HEAD
+  // 画像に依存している重みベクトルを作成
+  // if (make_weight_vector_file() != 0) {
+  //   puts("画像に依存している重みベクトルを作成中にエラー");
+  //   return;
+  // }
+
+  // 各重みベクトルについて、内積の値が大きいもの上位10番目まで
+  // 求める
+  if (make_nearest_image_file() != 0) {
+    puts("代表の近傍画像ランキング作成中にエラー");
+=======
   return;
   
   // 画像に依存している重みベクトルを作成
   if (make_weight_vector_file() != 0) {
     puts("画像に依存している重みベクトルを作成中にエラー");
+>>>>>>> origin/master
     return;
   }
 
@@ -108,6 +133,19 @@ int CacheGenerator::directory_check() {
       return 1;
     }
   }
+<<<<<<< HEAD
+
+  // ./$kNearestImageDir/ が存在するか
+  if (!is_exist(kNearestImageDir.c_str())) {
+    int ret = mkdir(kNearestImageDir.c_str(), get_permission(775));
+    // mkdir "$kNearestImageDir" が失敗した場合
+    if (ret != 0) {
+      printf("mkdir %s に失敗.\n", kNearestImageDir.c_str());
+      return 1;
+    }
+  } 
+=======
+>>>>>>> origin/master
   
   return 0;
 }
@@ -188,6 +226,67 @@ int CacheGenerator::make_feature_vector_file() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
+// SVM へ登録する
+void CacheGenerator::register_svm(SvmWrapper& svm,
+                                  const std::vector<double>& data,
+                                  const int idx, const int value) {
+  svm.problem.x[idx] = new svm_node[kTotalDim + 1];
+  for (int i = 0; i < kTotalDim; ++i) {
+    svm.problem.x[idx][i].index = i + 1;
+    svm.problem.x[idx][i].value = data[i] * value;
+  }
+  svm.problem.x[idx][kTotalDim].index = -1;
+  svm.problem.y[idx] = value;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// 画像に依存している重みベクトルを作成する関数
+int CacheGenerator::make_weight_vector_file() {
+
+  // 1. 画像リストを取得
+  std::vector<std::string> files;
+  Util::get_file_list(kImageDir + "/negativeImages", files, true);
+
+  // 2. 画像の特徴ベクトルをリスト化しておく
+  // 元画像 vector, 部分画像 vector vector
+  typedef std::vector<double> Vec;
+  typedef std::vector<Vec> Mat;
+
+  std::vector<Vec> orgs;
+  std::vector<Mat> subimages;
+
+  // orgs, subimages を構成
+  for (unsigned i = 0; i < files.size(); ++i) {
+    // orgs
+    Hog h_org(files[i].c_str(), kCellX, kBlockX, kResizeX, kResizeY, kCellBin);
+    orgs.push_back(h_org.get_data());
+    // subimages
+    // 縦2, 横5 の部分画像を考える
+    Mat tmp;
+    cv::Mat org = cv::imread(files[i].c_str(), 0);
+    const int horizon_unit = org.cols / 5.0;
+    const int vertical_unit = org.rows / 2.0;
+    for (int j = 0; j < 5; ++j) {
+      for (int k = 0; k < 2; ++k) {
+        cv::Mat sub = cv::Mat(org, cv::Rect(j * horizon_unit,
+                                            k * vertical_unit,
+                                            horizon_unit,
+                                            vertical_unit));
+        cv::resize(sub, sub, cv::Size(kResizeX, kResizeY));
+        Hog t(sub, kCellX, kBlockX, kResizeX, kResizeY, kCellBin);
+        tmp.push_back(t.get_data());
+      }
+    }
+    // Mat を追加
+    subimages.push_back(tmp);
+    // printf test
+    printf("%s image / subimages are constructed %d.\n",
+           files[i].c_str(), i);
+  }  
+=======
 // 画像に依存している重みベクトルを作成する関数
 int CacheGenerator::make_weight_vector_file() {
   std::vector<std::string> files;
@@ -201,16 +300,35 @@ int CacheGenerator::make_weight_vector_file() {
     Util::read_vector_data(files[i], t);
     feature_vector.push_back(t);
   }
+>>>>>>> origin/master
 
   // ランダム選択用の配列を作成し初期化
   std::vector<int> indice(files.size(), 0);
   for (int i = 0; i < indice.size(); ++i) indice[i] = i;
+<<<<<<< HEAD
+  
+  // 3. 元画像ごとに 重みベクトルを作成
+=======
 
+>>>>>>> origin/master
   for (unsigned i = 0; i < files.size(); ++i) {
     // キャッシュ作成先パスを作成
     std::string destination = files[i];
     for (int j = 0; j < 2; ++j) 
       destination = destination.substr(destination.find("/") + 1);
+<<<<<<< HEAD
+    destination = kWeightVectorDir + "/" + destination + ".w";
+    
+    // キャッシュ先ディレクトリ確認
+    Util::mkdir_rec(destination);
+    
+    // キャッシュ作成先のパスが存在する場合は飛ばす
+    if (is_exist(destination.c_str())) continue;
+    printf("%s is created.\n", destination.c_str());
+
+    // svm の初期設定
+    const int K = 100000 + 1;
+=======
     // destination = kWeightVectorDir + "/" + destination + ".w";
     destination = "~/Dropbox/" + kWeightVectorDir + "/" + destination + ".w";
 
@@ -229,10 +347,98 @@ int CacheGenerator::make_weight_vector_file() {
 
     // svm の初期設定
     const int K = 1 + (10000 - 1);
+>>>>>>> origin/master
     SvmWrapper svm(1, NULL, false);
     svm.problem.l = K;
     svm.problem.y = new double[K];
     svm.problem.x = new svm_node * [K];
+<<<<<<< HEAD
+
+    // ランダムに混ぜる
+    std::random_shuffle(indice.begin(), indice.end());
+
+    // ポジティブクラスの登録
+    register_svm(svm, orgs[i], 0, 1);
+
+    // ネガティブクラスの登録
+    for (int j = 0, idx = 1; j < files.size() && idx < K; ++j) {
+      if (indice[j] == (int)i) continue;
+      register_svm(svm, orgs[indice[j]], idx++, -1);
+      for (int k = 0; k < 10 && idx < K; ++k) {
+        register_svm(svm, subimages[indice[j]][k], idx++, -1);
+        printf("index %d\n", idx);
+      }
+    }
+    printf("register ended\n");
+    
+    // ファイルへ出力
+    Vec t = svm.get_weight_vector();
+    Util::write_vector_data(destination, t);
+
+    printf("%s is created.\n", destination.c_str());
+  }
+  return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// 
+int CacheGenerator::make_nearest_image_file() {
+  typedef std::vector<double> VectorDouble;
+  typedef std::vector<VectorDouble> MatDouble;
+  typedef std::pair<double,int> PairDoubleInt;
+  
+  // 重みベクトルのリスト, ベクトルを取得
+  std::vector<std::string> represents;
+  Util::get_file_list(kWeightVectorDir, represents, true);
+  MatDouble weight_vectors(represents.size());
+  for (unsigned i = 0; i < represents.size(); ++i) {
+    Util::read_vector_data(represents[i], weight_vectors[i]);
+  }
+  
+  // データベースとなる画像のベクトルをすべて読み込む
+  std::vector<std::string> database_files;
+  Util::get_file_list(kFeatureVectorDir + "/negativeImages",
+                      database_files, true);
+  MatDouble database_vectors(database_files.size());
+  for (unsigned i = 0; i < database_files.size(); ++i) {
+    Util::read_vector_data(database_files[i], database_vectors[i]);
+  }
+
+  // 各重みベクトルに対して、内積の値が大きい上位10までのものについて
+  // データベースを線形探索して求める
+  for (unsigned i = 0; i < represents.size(); ++i) {
+    // キャッシュ作成先パスを作成
+    std::string destination = represents[i];
+    for (int j = 0; j < 2; ++j)
+      destination = destination.substr(destination.find('/') + 1);
+    destination = kNearestImageDir + "/" + destination;
+
+    // 既にキャッシュが存在している場合は飛ばす
+    if (is_exist(destination.c_str())) continue;
+
+    // 上位10番目までのものについて探索する
+    std::priority_queue<PairDoubleInt,
+                        std::vector<PairDoubleInt>, std::greater<PairDoubleInt> > pq;
+    for (unsigned j = 0; j < database_vectors.size(); ++j) {
+      double d = Util::get_vector_dot(weight_vectors[i], database_vectors[j]);
+      if (pq.size() < 10) {
+        pq.push(PairDoubleInt(d, j));
+      } else if (pq.top().first < d) {
+        pq.pop();
+        pq.push(PairDoubleInt(d, j));
+      }
+    }
+
+    // ファイルに書き込む
+    std::vector<std::string> ranking;
+    while (!pq.empty()) {
+      PairDoubleInt p = pq.top(); pq.pop();
+      ranking.push_back(database_files[p.second]);
+    }
+    Util::write_string_vector_data(destination, ranking);
+  }
+
+=======
     
     // ポジティブ(自分)の設定
     svm.problem.x[0] = new svm_node[kTotalDim + 1];
@@ -261,6 +467,7 @@ int CacheGenerator::make_weight_vector_file() {
     Util::write_vector_data(destination, t);
   }
   
+>>>>>>> origin/master
   return 0;
 }
 
