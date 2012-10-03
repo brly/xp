@@ -30,10 +30,6 @@ void SimpleMethod::set_svm_problem_impl(const std::vector<std::string>& files,
 
 void SimpleMethod::set_positive_to_svm_problem(int& idx) {
   std::vector<std::string> vs;
-<<<<<<< HEAD
-=======
-  // vs.push_back(kFeatureVectorDir + "/circle_0");
->>>>>>> origin/master
   query_ = kFeatureVectorDir + query_.substr(query_.find('/'));
   query_.erase(query_.size() - 4);
 
@@ -45,26 +41,17 @@ void SimpleMethod::set_positive_to_svm_problem(int& idx) {
 
 void SimpleMethod::set_negative_to_svm_problem(int& idx) {
   std::vector<std::string> vs;
-<<<<<<< HEAD
   Util::get_file_list(kFeatureVectorDir + "/negativeImages", vs, true);
-  std::random_shuffle(vs.begin(), vs.end(), RandomFunction());
+  RandomFunction r;
+  std::random_shuffle(vs.begin(), vs.end(), r);
   vs.erase(vs.begin() + k_, vs.end());
-=======
-  Util::get_file_list(kFeatureVectorDir, vs, true);
-  std::random_shuffle(vs.begin(), vs.end(), RandomFunction());
-  vs.erase(vs.begin() + 50, vs.end());
->>>>>>> origin/master
 
   set_svm_problem_impl(vs, idx, -1);
 }
 
 void SimpleMethod::init_svm_problem() {
   // 計算時間が少ないであろうサンプル数(ネガティブのみ計上)を設定
-<<<<<<< HEAD
   const int kSampleL = k_ + 1;
-=======
-  const int kSampleL = 50 + 1;
->>>>>>> origin/master
   svm.problem.l = kSampleL;
   svm.problem.y = new double[kSampleL];
   svm.problem.x = new svm_node * [kSampleL];
@@ -84,30 +71,17 @@ void SimpleMethod::run() {
     this->init_svm_problem();
     wq = svm.get_weight_vector();
   }
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> origin/master
   SearchDatabase::search(wq);
 }
 
 void SimpleMethod::run(std::vector<std::string>& ranking) {
   std::vector<double> wq;
   {
-<<<<<<< HEAD
     Timer timer("simple");
-=======
-    Timer timer("simple method");
->>>>>>> origin/master
     this->init_svm_problem();
     wq = svm.get_weight_vector();
   }
 
-<<<<<<< HEAD
   // SearchDatabase::search(wq, ranking, 10);
   SearchDatabase::search(wq, ranking, 0);
-=======
-  SearchDatabase::search(wq, ranking, 10);
->>>>>>> origin/master
 }

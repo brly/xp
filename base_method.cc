@@ -1,16 +1,13 @@
 #include "base_method.h"
 #include "hog.h"
 #include "random_function.h"
-<<<<<<< HEAD
+
 #include "constant.h"
-=======
->>>>>>> origin/master
 #include "util.h"
 #include "timer.h"
 #include "search_database.h"
 
 namespace {
-<<<<<<< HEAD
 
 const int kL = 9998 * 11 + 2;
 
@@ -24,9 +21,6 @@ void register_svm(SvmWrapper& svm, const Hog& h, int idx, int value) {
   svm.problem.y[idx] = value;
 }
 
-=======
-const int kL = 11;
->>>>>>> origin/master
 };
 
 void BaseMethod::init_svm_problem() {
@@ -43,7 +37,6 @@ void BaseMethod::init_svm_problem() {
 }
 
 void BaseMethod::set_positive_svm() {
-<<<<<<< HEAD
   // 元画像
   Hog h0(query_.c_str(), kCellX, kBlockX, kResizeX, kResizeY, kCellBin);
   ::register_svm(svm, h0, 0, 1);
@@ -51,21 +44,10 @@ void BaseMethod::set_positive_svm() {
   // 回転させた画像
   Hog h1(query_.c_str(), kCellX, kBlockX, kResizeX, kResizeY, kCellBin, 1);
   ::register_svm(svm, h1, 1, 1);
-=======
-  Hog h(query_.c_str(), kCellX, kBlockX, kResizeX, kResizeY, kOrientation);
-  svm.problem.x[0] = new svm_node[kTotalDim + 1];
-  for (int i = 0; i < kTotalDim; ++i) {
-    svm.problem.x[0][i].index = i + 1;
-    svm.problem.x[0][i].value = h[i];
-  }
-  svm.problem.x[0][kTotalDim].index = -1;
-  svm.problem.y[0] = 1;
->>>>>>> origin/master
 }
 
 void BaseMethod::set_negative_svm() {
   std::vector<std::string> files;
-<<<<<<< HEAD
   Util::get_file_list(kImageDir + "/negativeImages", files, true);
 
   int idx = 2;
@@ -89,22 +71,6 @@ void BaseMethod::set_negative_svm() {
         ::register_svm(svm, t, idx++, -1);
       }
     }
-=======
-  Util::get_file_list(kFeatureVectorDir, files, true);
-  std::random_shuffle(files.begin(), files.end(), RandomFunction());
-
-  for (int i = 1; i < kL; ++i) {
-    std::vector<double> vd;
-    Util::read_vector_data(files[i-1], vd);
-    // svm へ登録
-    svm.problem.x[i] = new svm_node[kTotalDim + 1];
-    for (int j = 0; j < kTotalDim; ++j) {
-      svm.problem.x[i][j].index = j + 1;
-      svm.problem.x[i][j].value = -vd[j];
-    }
-    svm.problem.x[i][kTotalDim].index = -1;
-    svm.problem.y[i] = -1;
->>>>>>> origin/master
   }
 }
 
@@ -116,11 +82,7 @@ void BaseMethod::run() {
 }
 
 void BaseMethod::run(std::vector<std::string>& ranking) {
-<<<<<<< HEAD
   Timer timer("base");
-=======
-  Timer timer("base method");
->>>>>>> origin/master
   this->init_svm_problem();
   wq = svm.get_weight_vector();
   SearchDatabase::search(wq, ranking, 10);

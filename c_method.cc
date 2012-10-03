@@ -51,7 +51,8 @@ void CMethod::set_positive_problem() {
 void CMethod::set_negative_problem_random(const int kRandom, int& idx) {
   std::vector<std::string> samples;
   Util::get_file_list(kFeatureVectorDir, samples, true);
-  std::random_shuffle(samples.begin(), samples.end(), RandomFunction());
+  RandomFunction r;
+  std::random_shuffle(samples.begin(), samples.end(), r);
 
   for (int i = 0; i < kRandom; ++i) {
     std::vector<double> vd;

@@ -8,17 +8,13 @@
 #include "linear_combination_method.h"
 #include "assembling_method.h"
 #include "normal_method.h"
-<<<<<<< HEAD
 #include "c_method.h"
-=======
->>>>>>> origin/master
 
 #include <algorithm>
 #include <memory>
 #include <cassert>
 #include <cstdio>
 
-<<<<<<< HEAD
 #define ENABLE_ANOTHER
 
 namespace {
@@ -38,19 +34,11 @@ const std::string methods[] = {
   "CMethod 200 50", "CMethod 200 0",
   "CMethod 500 50", "CMethod 500 0",
   "Normal"
-=======
-namespace {
-
-const int kMethodN = 5;
-const std::string methods[] = {
-  "Base", "Simple", "Linear Combination", "Assembling", "Normal"
->>>>>>> origin/master
 };
 
 Method* create_method_object(const int type, const std::string& query) {
   switch (type) {
     case 0: return new BaseMethod(query);
-<<<<<<< HEAD
       
     case 1: return new SimpleMethod(query, 100);
     case 2: return new SimpleMethod(query, 200);
@@ -111,21 +99,12 @@ Method* create_method_object(const int type, const std::string& query) {
     case 14: return new AssemblingMethod(query, 500, 30);
     case 15: return new AssemblingMethod(query, 500, 15);
     case 16: return new NormalMethod(query);
-=======
-    case 1: return new SimpleMethod(query);
-    case 2: return new LinearCombinationMethod(query);
-    case 3: return new AssemblingMethod(query, 50, 30);
-    case 4: return new NormalMethod(query);
->>>>>>> origin/master
   }
   return nullptr;
 }
 
-<<<<<<< HEAD
 #endif // ENABLE_ANOTHER
 
-=======
->>>>>>> origin/master
 int count_diff(const std::vector<std::string>& lhs,
                const std::vector<std::string>& rhs) {
   if (lhs.size() != rhs.size()) {
@@ -134,7 +113,6 @@ int count_diff(const std::vector<std::string>& lhs,
   }
   int ret = 0;
   for (unsigned i = 0; i < lhs.size(); ++i) {
-<<<<<<< HEAD
     // rhs に含まれない要素がある場合は ret を 1 増加する
     if (rhs.end() == std::find(rhs.begin(), rhs.end(), lhs[i]))
       ++ret;
@@ -154,12 +132,6 @@ int count_gap(const std::vector<std::string>& lhs,
     // 上記の std::find では、要素は必ず rhs の中に存在するので、
     // it の値は rhs.end() を指し示す事はない仮定に基づいている
     ret += abs(i - distance(rhs.begin(), it));
-=======
-    if (rhs.end() == std::find(rhs.begin(), rhs.end(), lhs[i])) {
-      // printf("%s\n", lhs[i].c_str());
-      ++ret;
-    }
->>>>>>> origin/master
   }
   return ret;
 }
@@ -167,7 +139,6 @@ int count_gap(const std::vector<std::string>& lhs,
 }; // anonymous namespace
 
 void ExperimentManager::run() {
-<<<<<<< HEAD
   // コードリーディングのための typedef
   typedef std::vector<std::string> VectorString;
   
@@ -210,52 +181,16 @@ void ExperimentManager::run() {
                       ranking);
       }
       // 本当は必要ないけど、明示的にメモリ開放文を書く
-=======
-  std::vector<double> avg_time(kMethodN, 0);
-  std::vector<int> diff(kMethodN, 0);
-  std::vector<int> diff2(kMethodN, 0);
-  for (int i = 0; i < kQueryN; ++i) {
-    printf("query %s\n", query[i].c_str());
-    std::vector<std::string> base_ranking;
-    for (int j = 0; j < kMethodN - 1; ++j) {
-      printf("method >> %s : ", methods[j].c_str());
-      clock_t start = clock();
-      std::shared_ptr<Method> method(::create_method_object(j, query[i]));
-      std::vector<std::string> ranking;
-      if (j == 0) {
-        method->run(base_ranking);
-      } else {
-        method->run(ranking);
-        int ret = count_diff(base_ranking, ranking);
-        printf("%d ", ret);
-        diff[j] += ret;
-        printf("%d \n", ret);
-        ret = count_diff(std::vector<std::string>(
-                base_ranking.begin(), base_ranking.begin() + 5),
-                       std::vector<std::string>(
-                           ranking.begin(), ranking.begin() + 5));
-        diff2[j] += ret;
-      }
-      avg_time[j] += (clock() - start) / CLOCKS_PER_SEC;
->>>>>>> origin/master
       method.reset();
     }
   }
 
   // 最後の出力
   for (int i = 0; i < kMethodN; ++i) {
-<<<<<<< HEAD
     printf("\"%s\" %d %d, %d %d\n",
            methods[i].c_str(),
            diff[i], diff2[i],
            gap[i], gap2[i]);
-=======
-    printf("%s , df {%d}, df2 {%d}, time %f\n",
-           methods[i].c_str(),
-           diff[i],
-           diff2[i],
-           avg_time[i]);
->>>>>>> origin/master
   }
 }
 

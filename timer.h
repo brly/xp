@@ -13,19 +13,11 @@ class Timer {
   explicit Timer(const char* process_nane) : process_name_(process_nane),
                                              begin_(clock()) {}
   ~Timer() {
-<<<<<<< HEAD
+
     printf("%s %f\n",
-=======
-    printf("%s : %f sec\n",
->>>>>>> origin/master
            process_name_.c_str(),
            static_cast<double>(clock() - begin_) / CLOCKS_PER_SEC);
   }
 };
 
-<<<<<<< HEAD
 #endif // TIMER_H_
-
-=======
-#endif // 
->>>>>>> origin/master

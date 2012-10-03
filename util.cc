@@ -113,7 +113,6 @@ void Util::write_vector_data(const std::string& path,
   fclose(file_ptr);
 }
 
-<<<<<<< HEAD
 void Util::write_string_vector_data(const std::string& path,
                                     const std::vector<std::string>& source) {
   FILE *file_ptr = nullptr;
@@ -131,8 +130,6 @@ void Util::write_string_vector_data(const std::string& path,
   fclose(file_ptr);
 }
 
-=======
->>>>>>> origin/master
 void Util::pwd() {
   char buf[1000];
   if (getcwd(buf, sizeof(buf)) == NULL) {

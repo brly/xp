@@ -25,10 +25,7 @@ enum {
 const std::string kCacheDir = "cache";
 const std::string kFeatureVectorDir = kCacheDir + "/feature_vector";
 const std::string kWeightVectorDir = kCacheDir + "/weight_vector";
-<<<<<<< HEAD
 const std::string kNearestImageDir = kCacheDir + "/nearest_image";
-=======
->>>>>>> origin/master
 const std::string kImageDir = "easy_test";
 
 #endif // CONSTANT_H

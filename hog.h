@@ -1,15 +1,8 @@
-<<<<<<< HEAD
 #ifndef HOG_H
 #define HOG_H
 
 #include "constant.h"
 
-=======
-
-#ifndef HOG_H
-#define HOG_H
-
->>>>>>> origin/master
 #include <opencv2/opencv.hpp>
 
 #include <iostream>
